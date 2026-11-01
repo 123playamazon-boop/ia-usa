@@ -135,6 +135,14 @@ img{max-width:100%}
 .zoomov img{max-width:96vw;max-height:92vh;object-fit:contain;transition:transform .2s ease;cursor:zoom-in;will-change:transform}
 .zoomov .zx{position:fixed;top:14px;right:16px;background:rgba(255,255,255,.16);color:#fff;border:0;width:42px;height:42px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;z-index:201}
 .zoomov .zc{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:#dfe8f2;font-size:12px;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:999px;z-index:201}
+.stars{display:inline-flex;gap:1px;line-height:1}.stars .st{color:#dfe3e9;font-size:13px}.stars .st.on{color:#F5A623}
+.rt{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin:5px 0}.rt .rv-num{font-weight:700;color:var(--navy-ink)}.rt .rc{color:var(--faint)}
+.rt.big{font-size:14px;margin:8px 0}.rt.big .st{font-size:17px}
+.reviews{display:flex;flex-direction:column;gap:10px}
+.rv{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.rv-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}.rv-h b{font-size:13px;color:var(--navy-ink)}
+.rv .vf{font-size:10.5px;color:#1a7f37;background:#e7f6ec;padding:2px 7px;border-radius:999px;font-weight:600}
+.rv p{font-size:13.5px;color:var(--ink);line-height:1.45;margin:0}
 .rail{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .rail::-webkit-scrollbar{display:none}
 .rail .card{flex:0 0 var(--card-w)}
@@ -441,6 +449,8 @@ const SIZEMAP={'Lingerie':['P','M','G'],'Meias':['34-38','39-43','44-48']};
 const APPAREL=Object.keys(SIZEMAP);
 function prodSizes(p){return (p.sizes&&p.sizes.length)?p.sizes:(SIZEMAP[p.categoria]||[]);}
 function sizeLabel(p){return p.categoria==='Meias'?'Numeração (BR)':((APPAREL.includes(p.categoria)||/tamanho/i.test(p.variacao_label||''))?'Tamanho':(p.variacao_label||'Opção'));}
+function stars(r){r=+r||0;let h='';for(let i=1;i<=5;i++){h+=`<span class="st${i<=Math.round(r)?' on':''}">★</span>`;}return `<span class="stars">${h}</span>`;}
+function ratingLine(p,cls){if(!p.rating)return '';const c=p.rating_count?` <span class="rc">(${(+p.rating_count).toLocaleString('pt-BR')})</span>`:'';return `<div class="rt ${cls||''}">${stars(p.rating)}<span class="rv-num">${(+p.rating).toFixed(1)}</span>${c}</div>`;}
 let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', filtroSub='Todos', termoBusca='';
 
 async function loadAll(){
@@ -496,6 +506,7 @@ function cardHtml(p){
       ${d?`<span class="disc">-${d}%</span>`:''}<span class="usa">🇺🇸</span></div>
     <div class="cbody">
       <div class="nm">${esc(p.nome)}</div>
+      ${ratingLine(p)}
       <div class="pr"><span class="now">${BRL.format(p.preco)}</span>${p.preco_de&&p.preco_de>p.preco?`<span class="old">${BRL.format(p.preco_de)}</span>`:''}</div>
       <div class="save">${d?`Economize ${BRL.format(p.preco_de-p.preco)}`:'&nbsp;'}</div>
       <div class="shipl">Entrega ${esc(p.prazo||'10–15 dias')} · <b>frete incluso</b></div>
@@ -542,6 +553,7 @@ function openProduto(id,fromHash){
         <div class="pp-cat">${esc(p.categoria||'Importado')} · Importado dos EUA 🇺🇸</div>
         <h1 class="pp-title">${esc(p.nome)}</h1>
         <div class="pp-meta"><span>Marca: <b>${esc(brandOf(p))}</b></span>${p.asin?`<span>Ref.: <b>${esc(p.asin)}</b></span>`:''}<span>Origem: <b>Estados Unidos</b></span></div>
+        ${p.rating?`${ratingLine(p,'big')}`:''}
         <div class="pp-price"><span class="now">${BRL.format(p.preco)}</span>${p.preco_de&&p.preco_de>p.preco?`<span class="old">${BRL.format(p.preco_de)}</span><span class="tag">-${d}%</span>`:''}</div>
         <div class="pp-incl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg> Preço final em reais — imposto de importação e frete já inclusos</div>
         <div class="stock"><span class="dot"></span> Disponível · envio em 1 a 2 dias úteis após o pagamento</div>
@@ -555,6 +567,7 @@ function openProduto(id,fromHash){
         <div class="field"><label>Quantidade</label><div class="qtyrow"><button onclick="ppQty(-1)">−</button><input id="ppQty" value="1" readonly><button onclick="ppQty(1)">+</button></div></div>
         <div class="field"><div class="twoinput"><div><label>Seu nome</label><input class="inp" id="ppName" placeholder="Opcional"></div><div><label>Cidade</label><input class="inp" id="ppCity" placeholder="Opcional"></div></div></div>
         ${p.descricao?`<div class="field"><label>Sobre o produto</label><div class="pp-desc">${esc(p.descricao)}</div></div>`:''}
+        ${p.reviews&&p.reviews.length?`<div class="field"><label>Avaliações de quem comprou nos EUA${p.rating?` · ${(+p.rating).toFixed(1)} de 5`:''}</label><div class="reviews">${p.reviews.map(rv=>`<div class="rv"><div class="rv-h">${stars(rv.nota||p.rating)}<b>${esc(rv.autor||'Comprador')}</b><span class="vf">✓ Avaliação verificada (EUA)</span></div><p>"${esc(rv.texto)}"</p></div>`).join('')}</div></div>`:''}
         <div class="acc">
           <details open><summary>Entrega e rastreamento <span class="x">+</span></summary><div class="ac">A contagem de 10 a 15 dias úteis começa após a confirmação do pagamento. Assim que o pedido é despachado, você recebe o código de rastreio pelo WhatsApp e acompanha até a entrega.</div></details>
           <details><summary>Impostos e alfândega <span class="x">+</span></summary><div class="ac">O preço que você vê já é o preço final: inclui o imposto de importação e o frete internacional. Você não paga nada a mais na chegada. A empresa cuida de toda a parte alfandegária.</div></details>
