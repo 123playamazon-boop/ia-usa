@@ -423,6 +423,8 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 function ph(nm){return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='#f4f6f9'/><text x='150' y='150' font-family='sans-serif' font-size='110' fill='#c6ccd4' text-anchor='middle' dominant-baseline='central'>${(nm||'?').trim()[0]||'?'}</text></svg>`);}
 window.imgErr=function(el,nm){el.onerror=null;el.src=ph(nm);};
 const CAT_ORDER=['Suplementos','Eletrônicos','Beleza','Perfumes','Colecionáveis','Gaming','Brinquedos','Bebê','Beleza Premium','Cozinha','Papelaria','Esportes','Pet','Alimentos','Casa','Saúde'];
+// Ordem preferida das subcategorias (o que vende mais aparece primeiro). Sem entrada = ordena por quantidade.
+const SUBORDER={'Eletrônicos':['Capas & Acessórios','Carregadores & Power Banks','Áudio & Fones','Casa Inteligente','Alexa & Echo','Câmeras & Segurança']};
 let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', filtroSub='Todos', termoBusca='';
 
 async function loadAll(){
@@ -491,9 +493,11 @@ function renderShelves(){
     el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>Resultados para "${esc(termoBusca)}"</h2></div><div class="grid">${list.length?list.map(cardHtml).join(''):'<div class="empty">Nenhum produto no site com esse nome — mas a IA pode importar pra você 👇</div>'}</div>${askAI}</section>`;return;}
   if(filtroCat!=='Todos'){const all=PRODUTOS.filter(p=>p.categoria===filtroCat);
     const subMap={};all.forEach(p=>{const s=p.subcategoria||'Outros';subMap[s]=(subMap[s]||0)+1;});
-    const subs=Object.keys(subMap).sort((a,b)=>subMap[b]-subMap[a]);
+    const ord=SUBORDER[filtroCat]||[];
+    const rank=s=>{const i=ord.indexOf(s);return i<0?99:i;};
+    const subs=Object.keys(subMap).sort((a,b)=>{const ia=rank(a),ib=rank(b);if(ia!==ib&&(ia<99||ib<99))return ia-ib;return subMap[b]-subMap[a];});
     if(filtroSub!=='Todos'&&!subMap[filtroSub])filtroSub='Todos';
-    const prods=(filtroSub==='Todos')?all:all.filter(p=>(p.subcategoria||'Outros')===filtroSub);
+    const prods=(filtroSub==='Todos')?all.slice().sort((a,b)=>rank(a.subcategoria||'Outros')-rank(b.subcategoria||'Outros')):all.filter(p=>(p.subcategoria||'Outros')===filtroSub);
     const chips=subs.length>1?`<div class="subchips"><button aria-pressed="${filtroSub==='Todos'}" onclick="pickSub('Todos')">Todos <span>${all.length}</span></button>`+subs.map(s=>`<button aria-pressed="${s===filtroSub}" onclick="pickSub('${s.replace(/'/g,"\\'")}')">${esc(s)} <span>${subMap[s]}</span></button>`).join('')+`</div>`:'';
     el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>${esc(filtroCat)}</h2><a onclick="pickCat('Todos')">‹ Início</a></div>${chips}<div class="grid">${prods.map(cardHtml).join('')||'<div class="empty">Nenhum produto.</div>'}</div></section>`;return;}
   el.innerHTML=cats().map(c=>{const prods=PRODUTOS.filter(p=>p.categoria===c);if(!prods.length)return '';
