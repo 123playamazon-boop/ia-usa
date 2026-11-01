@@ -3,198 +3,328 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>IA USA — Importação dos EUA</title>
+<title>IA USA — Importação dos EUA para o Brasil</title>
+<meta name="description" content="Importe produtos originais dos Estados Unidos com segurança. Empresa sediada em Miami, Flórida. Preço final em reais, imposto e frete inclusos, entrega rastreada em 10 a 15 dias.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{
-  --nav:#0B2239; --nav-2:#143A5E; --accent:#F0881E; --accent-d:#D9730A; --accent-ink:#20160A;
-  --bg:#EEF0F3; --surface:#FFFFFF; --surface-2:#F6F7F9;
-  --ink:#131821; --muted:#5A6572; --faint:#8A94A1; --line:#E4E7EC;
-  --price:#B12704; --promo:#167A3E; --ok:#1FA855;
-  --shadow:0 1px 2px rgba(19,24,33,.05),0 6px 18px -12px rgba(19,24,33,.18);
+  /* Azul-marinho institucional · branco base · laranja só em CTA/ofertas */
+  --navy:#0A2540; --navy-2:#123A64; --navy-3:#1B4F8A; --navy-ink:#0A2540;
+  --accent:#F47920; --accent-d:#DC6410; --accent-ink:#2A1600; --accent-soft:#FFF2E6;
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F6F9; --surface-3:#EAEEF3;
+  --ink:#0E1A2B; --muted:#56657A; --faint:#8A97A8; --line:#E3E8EF;
+  --promo:#0C7A43; --ok:#17A34A; --wa:#25D366;
+  --shadow:0 1px 2px rgba(10,37,64,.04),0 8px 22px -14px rgba(10,37,64,.22);
+  --shadow-lg:0 18px 46px -22px rgba(10,37,64,.34);
   --body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  /* escala tipográfica fixa */
-  --fs-nm:13px; --fs-price:18px; --fs-old:12px; --fs-meta:11.5px; --fs-btn:13px;
-  --thumb-h:170px; --card-w:188px;
+  --fs-nm:13.5px; --fs-price:19px; --fs-old:12px; --fs-meta:11.5px; --fs-btn:13px;
+  --thumb-h:176px; --card-w:190px; --radius:14px;
   color-scheme:light;
 }
-@media(max-width:620px){:root{--thumb-h:140px; --card-w:150px; --fs-price:16px}}
+@media(max-width:620px){:root{--thumb-h:142px; --card-w:152px; --fs-price:16px; --radius:12px}}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.4;-webkit-font-smoothing:antialiased}
-h1,h2,h3{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.45;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3,h4{margin:0;letter-spacing:-.01em}
 button{font-family:inherit;cursor:pointer}
-input{font-family:inherit;font-size:16px}
+input,select{font-family:inherit;font-size:16px}
 a{color:inherit;text-decoration:none}
 img{max-width:100%}
 .scrollx{overflow-x:auto;scrollbar-width:none}.scrollx::-webkit-scrollbar{display:none}
+.wrap{max-width:1260px;margin:0 auto;padding:0 max(14px,env(safe-area-inset-left,0px))}
 
-/* HEADER */
-.topbar{background:var(--nav);color:#fff;position:sticky;top:0;z-index:50;padding-top:env(safe-area-inset-top,0px)}
-.topbar .inner{display:flex;align-items:center;gap:12px;max-width:1260px;margin:0 auto;padding:10px max(12px,env(safe-area-inset-left,0px))}
+/* ===== HEADER ===== */
+.topbar{background:var(--navy);color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 1px 0 rgba(255,255,255,.04)}
+.topbar .bar{display:flex;align-items:center;gap:12px;max-width:1260px;margin:0 auto;padding:11px max(14px,env(safe-area-inset-left,0px));padding-top:calc(11px + env(safe-area-inset-top,0px))}
+.menu-btn{flex:0 0 auto;width:42px;height:42px;border:0;background:rgba(255,255,255,.08);border-radius:11px;color:#fff;display:grid;place-items:center}
+.menu-btn svg{width:21px;height:21px}
+@media(min-width:900px){.menu-btn{display:none}}
 .logo{display:flex;flex-direction:column;flex:0 0 auto;line-height:1;cursor:pointer}
-.logo .m{font-weight:800;font-size:20px;letter-spacing:-.02em}.logo .m b{color:var(--accent)}
-.logo .t{font-size:8.5px;letter-spacing:.14em;color:#aec0d4;margin-top:2px;text-transform:uppercase}
-.search{flex:1;display:flex;min-width:0;background:#fff;border-radius:10px;overflow:hidden}
-.search input{border:0;flex:1;min-width:0;padding:11px 13px;color:#111;font-size:15px}
+.logo .m{font-weight:800;font-size:21px;letter-spacing:-.025em}.logo .m b{color:var(--accent)}
+.logo .t{font-size:8px;letter-spacing:.16em;color:#9fb5cd;margin-top:3px;text-transform:uppercase}
+@media(max-width:620px){.logo .t{display:none}}
+.search{flex:1;display:flex;min-width:0;background:#fff;border-radius:11px;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.search input{border:0;flex:1;min-width:0;padding:11px 14px;color:#111;font-size:15px}
 .search input:focus{outline:2px solid var(--accent);outline-offset:-2px}
-.search button{border:0;background:var(--accent);color:var(--accent-ink);width:48px;display:grid;place-items:center;font-size:17px}
-.wa-top{flex:0 0 auto;display:flex;align-items:center;gap:7px;font-size:12px;color:#dde7f1}
-.wa-top b{display:block;color:#fff;font-size:12.5px}.wa-top svg{width:22px;height:22px}
-@media(max-width:620px){.wa-top .lbl{display:none}}
-.mcats{background:var(--nav-2);color:#fff;display:block}
-.mcats .inner{display:flex;gap:2px;max-width:1260px;margin:0 auto;padding:4px 8px}
-.mcats button{white-space:nowrap;border:0;background:transparent;color:#eaf1f8;font-weight:600;font-size:13.5px;padding:8px 13px;border-radius:8px}
-.mcats button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.search button{border:0;background:var(--accent);color:#fff;width:50px;display:grid;place-items:center}
+.search button svg{width:19px;height:19px}
+.wa-top{flex:0 0 auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#cdddec;cursor:pointer}
+.wa-top b{display:block;color:#fff;font-size:12.5px}.wa-top .ic{width:34px;height:34px;border-radius:9px;background:rgba(37,211,102,.16);display:grid;place-items:center}.wa-top .ic svg{width:19px;height:19px}
+@media(max-width:760px){.wa-top .lbl{display:none}}
+.deliverbar{background:var(--navy-2);font-size:12px;color:#d7e3f0}
+.deliverbar .in{display:flex;align-items:center;gap:7px;max-width:1260px;margin:0 auto;padding:7px max(14px,env(safe-area-inset-left,0px))}
+.deliverbar svg{width:15px;height:15px;color:var(--accent);flex:0 0 auto}
+.mcats{background:var(--navy-2);color:#fff}
+.mcats .in{display:flex;gap:2px;max-width:1260px;margin:0 auto;padding:4px 10px}
+.mcats button{white-space:nowrap;border:0;background:transparent;color:#e6eef6;font-weight:600;font-size:13.5px;padding:9px 13px;border-radius:9px}
+.mcats button[aria-pressed="true"]{background:var(--accent);color:#fff}
 @media(min-width:900px){.mcats{display:none}}
 
-/* LAYOUT */
-.shell{max-width:1260px;margin:0 auto;display:flex;gap:18px;padding:0 max(12px,env(safe-area-inset-left,0px))}
+/* ===== MENU DRAWER ===== */
+.drawer-bg{position:fixed;inset:0;z-index:80;background:rgba(10,20,34,.5);opacity:0;pointer-events:none;transition:.2s}
+.drawer-bg.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;z-index:81;width:84%;max-width:330px;background:#fff;transform:translateX(-100%);transition:transform .24s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.drawer-top{background:var(--navy);color:#fff;padding:18px 18px;display:flex;align-items:center;justify-content:space-between}
+.drawer-top .m{font-weight:800;font-size:19px}.drawer-top .m b{color:var(--accent)}
+.drawer-top button{width:36px;height:36px;border:0;background:rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:16px}
+.drawer h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:16px 18px 7px}
+.drawer a{display:flex;align-items:center;gap:11px;padding:12px 18px;font-size:14.5px;font-weight:600;border-bottom:1px solid var(--surface-2)}
+.drawer a:active{background:var(--surface-2)}
+.drawer a svg{width:18px;height:18px;color:var(--navy-3);flex:0 0 auto}
+.drawer a .q{margin-left:auto;font-size:11.5px;color:var(--faint);font-weight:700}
+
+/* ===== LAYOUT ===== */
+.shell{max-width:1260px;margin:0 auto;display:flex;gap:20px;padding:0 max(14px,env(safe-area-inset-left,0px))}
 .side{display:none}
 @media(min-width:900px){
-  .side{display:block;flex:0 0 210px;padding-top:16px}
-  .side-in{position:sticky;top:82px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
-  .side h3{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:13px 15px 9px;border-bottom:1px solid var(--line)}
-  .side a.item{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--surface-2);cursor:pointer}
+  .side{display:block;flex:0 0 214px;padding-top:18px}
+  .side-in{position:sticky;top:94px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .side h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 16px 9px;border-bottom:1px solid var(--line)}
+  .side a.item{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--surface-2);cursor:pointer}
   .side a.item:last-child{border-bottom:0}
   .side a.item:hover{background:var(--surface-2)}
-  .side a.item[aria-current="true"]{color:var(--accent-d);background:#FFF6EC;box-shadow:inset 3px 0 0 var(--accent)}
+  .side a.item[aria-current="true"]{color:var(--accent-d);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
   .side a.item .q{font-size:11px;color:var(--faint);font-weight:600}
+  .side .help{padding:14px 16px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .side .help b{display:block;font-size:12.5px;margin-bottom:3px}.side .help span{font-size:11.5px;color:var(--muted)}
 }
 .content{flex:1;min-width:0;padding-bottom:50px}
 
-/* BANNER */
-.banner{margin-top:14px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:block;cursor:pointer;background:var(--nav);line-height:0}
+/* ===== BANNER + TRUST ===== */
+.banner{margin-top:16px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:block;cursor:pointer;background:var(--navy);line-height:0}
 .banner img{width:100%;height:auto;display:block}
-@media(max-width:620px){.banner{margin-top:10px}}
-.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+@media(max-width:620px){.banner{margin-top:12px}}
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
 @media(max-width:620px){.trust{grid-template-columns:repeat(2,1fr)}}
-.trust .t{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:10px 12px;display:flex;gap:9px;align-items:center;box-shadow:var(--shadow)}
-.trust .t svg{width:21px;height:21px;color:var(--accent-d);flex:0 0 auto}
+.trust .t{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow)}
+.trust .t .ic{width:30px;height:30px;border-radius:9px;background:var(--accent-soft);display:grid;place-items:center;flex:0 0 auto}
+.trust .t svg{width:17px;height:17px;color:var(--accent-d)}
 .trust .t b{display:block;font-size:12px}.trust .t span{font-size:10.5px;color:var(--muted)}
 
-/* SHELF */
-.shelf{margin-top:22px}
-.shelf-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.shelf-h h2{font-size:17px;font-weight:800}
+/* ===== SHELF + CARD ===== */
+.shelf{margin-top:26px}
+.shelf-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.shelf-h h2{font-size:18px;font-weight:800;color:var(--navy-ink)}
 .shelf-h a{color:var(--accent-d);font-size:13px;font-weight:700;cursor:pointer}
-.rail{display:flex;gap:11px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
+.rail{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .rail::-webkit-scrollbar{display:none}
 .rail .card{flex:0 0 var(--card-w)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:12px;align-items:stretch}
-
-/* CARD — sistema rígido: tudo padronizado */
-.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .15s,transform .15s;cursor:pointer}
-.card:hover{box-shadow:0 10px 24px -14px rgba(19,24,33,.34);transform:translateY(-2px)}
-.thumb{height:var(--thumb-h);background:#fff;display:flex;align-items:center;justify-content:center;padding:12px;position:relative;border-bottom:1px solid var(--surface-2);flex:0 0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:13px;align-items:stretch}
+.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .15s,transform .15s;cursor:pointer}
+.card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.thumb{height:var(--thumb-h);background:#fff;display:flex;align-items:center;justify-content:center;padding:13px;position:relative;border-bottom:1px solid var(--surface-2);flex:0 0 auto}
 .thumb img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;mix-blend-mode:multiply}
-.disc{position:absolute;top:8px;left:8px;background:var(--price);color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px}
-.usa{position:absolute;top:8px;right:8px;width:22px;height:16px;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
-.usa i{display:block;font-style:normal;font-size:13px;line-height:16px;text-align:center}
-.cbody{padding:10px 12px 12px;display:flex;flex-direction:column;flex:1 1 auto;min-width:0}
-.cbody .nm{font-size:var(--fs-nm);font-weight:600;line-height:1.3;height:calc(1.3em * 2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:6px}
-.pr{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
-.pr .now{color:var(--price);font-size:var(--fs-price);font-weight:800;letter-spacing:-.01em}
+.disc{position:absolute;top:9px;left:9px;background:var(--accent);color:#fff;font-size:11px;font-weight:800;padding:3px 7px;border-radius:7px}
+.usa{position:absolute;top:9px;right:9px;font-size:14px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.12))}
+.cbody{padding:11px 13px 13px;display:flex;flex-direction:column;flex:1 1 auto;min-width:0}
+.cbody .nm{font-size:var(--fs-nm);font-weight:600;line-height:1.3;height:calc(1.3em * 2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:7px;color:var(--ink)}
+.pr{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.pr .now{color:var(--navy-ink);font-size:var(--fs-price);font-weight:800;letter-spacing:-.02em}
 .pr .old{font-size:var(--fs-old);color:var(--faint);text-decoration:line-through}
-.save{font-size:var(--fs-meta);color:var(--promo);font-weight:700;margin-top:2px;height:1.3em;overflow:hidden}
+.save{font-size:var(--fs-meta);color:var(--promo);font-weight:700;margin-top:3px;height:1.3em;overflow:hidden}
 .shipl{font-size:var(--fs-meta);color:var(--muted);margin-top:3px;height:1.3em;overflow:hidden}.shipl b{color:var(--ok)}
-.buy{margin-top:10px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:var(--fs-btn);padding:10px;border-radius:9px;width:100%}
+.buy{margin-top:11px;border:0;background:var(--accent);color:#fff;font-weight:800;font-size:var(--fs-btn);padding:11px;border-radius:10px;width:100%;transition:background .15s}
 .buy:hover{background:var(--accent-d)}
-.empty,.loading{text-align:center;color:var(--muted);padding:44px 16px}
+.empty,.loading{text-align:center;color:var(--muted);padding:48px 16px}
 
-/* SHEET */
-.overlay{position:fixed;inset:0;z-index:70;background:rgba(10,15,22,.55);display:flex;align-items:flex-end;justify-content:center}
-@media(min-width:640px){.overlay{align-items:center;padding:18px}}
-.sheet{background:#fff;width:100%;max-width:560px;max-height:94vh;overflow-y:auto;border-radius:18px 18px 0 0}
-@media(min-width:640px){.sheet{border-radius:16px}}
-.sheet-media{height:300px;background:#fff;position:relative;display:flex;align-items:center;justify-content:center;padding:18px;border-bottom:1px solid var(--line)}
-.sheet-media img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:multiply}
-.sheet-media video{width:100%;height:100%;object-fit:contain}
-.sheet-x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:#EEF0F3;font-size:17px}
-.thumbs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 0;scrollbar-width:none}.thumbs::-webkit-scrollbar{display:none}
-.thumb-b{flex:0 0 auto;width:54px;height:54px;border:2px solid var(--line);border-radius:9px;background:#fff;padding:3px;overflow:hidden}
-.thumb-b.on{border-color:var(--accent)}
-.thumb-b img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
-.sbody{padding:16px 16px 0;display:flex;flex-direction:column;gap:12px}
-.sbody .cat{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-d);font-weight:700}
-.sbody h2{font-size:19px;font-weight:700;line-height:1.3}
-.sprice{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-.sprice .now{color:var(--price);font-size:26px;font-weight:800}
-.sprice .old{font-size:14px;color:var(--faint);text-decoration:line-through}
-.sprice .tag{background:#E7F7EE;color:var(--promo);font-size:12px;font-weight:800;padding:3px 8px;border-radius:6px}
-.desc{color:#39414c;font-size:13.5px;line-height:1.5;white-space:pre-wrap}
-.tbox{display:flex;flex-direction:column;gap:7px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:12.5px}
-.tbox .r{display:flex;align-items:center;gap:9px}.tbox .r svg{width:17px;height:17px;color:var(--ok);flex:0 0 auto}
-.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:7px}
-.sizebtns{display:flex;gap:8px;flex-wrap:wrap}
-.sizebtns button{border:1.5px solid var(--line);background:#fff;font-weight:700;min-width:46px;padding:10px 14px;border-radius:9px}
-.sizebtns button[aria-pressed="true"]{border-color:var(--accent);background:#FFF3E6}
-.qtyrow{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:9px;width:fit-content;overflow:hidden}
-.qtyrow button{width:42px;height:42px;border:0;background:#F3F4F6;font-size:19px}
-.qtyrow input{width:46px;height:42px;border:0;text-align:center;font-weight:700}
-.twoinput{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.inp{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:9px}
-.sticky-cta{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));margin-top:8px}
-.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;background:var(--ok);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:11px}
-.cta svg{width:20px;height:20px}.cta .tot{opacity:.92;font-weight:700}
-.hint{font-size:11.5px;color:var(--muted);text-align:center;margin:8px 0 0}
+/* ===== PRODUCT PAGE ===== */
+.pp{max-width:1080px;margin:0 auto;padding:0 max(14px,env(safe-area-inset-left,0px)) 120px}
+.crumb{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);padding:14px 0 4px}
+.crumb a{color:var(--navy-3);font-weight:600;cursor:pointer}
+.back{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--navy-3);font-weight:700;font-size:13.5px;padding:10px 0}
+.back svg{width:17px;height:17px}
+.pp-grid{display:grid;grid-template-columns:1fr;gap:22px}
+@media(min-width:860px){.pp-grid{grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:34px;align-items:start}}
+.gal-main{background:#fff;border:1px solid var(--line);border-radius:var(--radius);height:360px;display:flex;align-items:center;justify-content:center;padding:22px;box-shadow:var(--shadow)}
+@media(min-width:860px){.gal-main{height:430px;position:sticky;top:94px}}
+.gal-main img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:multiply}
+.gal-main video{width:100%;height:100%;object-fit:contain}
+.gal-thumbs{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;margin-top:11px}.gal-thumbs::-webkit-scrollbar{display:none}
+.gal-thumbs .gt{flex:0 0 auto;width:62px;height:62px;border:2px solid var(--line);border-radius:10px;background:#fff;padding:4px;overflow:hidden}
+.gal-thumbs .gt.on{border-color:var(--accent)}
+.gal-thumbs .gt img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+@media(min-width:860px){.gal-wrap{position:relative}.gal-thumbs{position:sticky;top:538px}}
+.pp-cat{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-d);font-weight:800}
+.pp-title{font-size:23px;font-weight:800;line-height:1.28;margin:8px 0 6px;color:var(--navy-ink)}
+@media(max-width:620px){.pp-title{font-size:20px}}
+.pp-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:12.5px;color:var(--muted);margin-bottom:14px}
+.pp-meta b{color:var(--ink)}
+.pp-price{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;margin:6px 0}
+.pp-price .now{color:var(--navy-ink);font-size:33px;font-weight:800;letter-spacing:-.02em}
+.pp-price .old{font-size:16px;color:var(--faint);text-decoration:line-through}
+.pp-price .tag{background:var(--accent);color:#fff;font-size:12.5px;font-weight:800;padding:4px 9px;border-radius:7px}
+.pp-incl{font-size:12.5px;color:var(--promo);font-weight:700;display:flex;align-items:center;gap:7px;margin-top:3px}
+.pp-incl svg{width:16px;height:16px}
+.stock{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--ok);margin:12px 0 2px}
+.stock .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(23,163,74,.16)}
+.pbox{display:flex;flex-direction:column;gap:9px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:12.8px;margin-top:14px}
+.pbox .r{display:flex;align-items:flex-start;gap:10px}.pbox .r svg{width:17px;height:17px;color:var(--navy-3);flex:0 0 auto;margin-top:1px}
+.pbox .r b{color:var(--ink)}
+.field{margin-top:16px}
+.field > label{display:block;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.sizebtns{display:flex;gap:9px;flex-wrap:wrap}
+.sizebtns button{border:1.5px solid var(--line);background:#fff;font-weight:700;min-width:48px;padding:11px 15px;border-radius:10px}
+.sizebtns button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+.qtyrow{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:10px;width:fit-content;overflow:hidden}
+.qtyrow button{width:44px;height:44px;border:0;background:var(--surface-2);font-size:20px}
+.qtyrow input{width:50px;height:44px;border:0;text-align:center;font-weight:800}
+.twoinput{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.inp{width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.inp:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+.pp-desc{color:#303d4e;font-size:14px;line-height:1.6;white-space:pre-wrap;margin-top:14px}
+.acc{margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.acc details{border-bottom:1px solid var(--line)}.acc details:last-child{border-bottom:0}
+.acc summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:space-between}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary .x{color:var(--navy-3);font-size:18px;transition:.2s}.acc details[open] summary .x{transform:rotate(45deg)}
+.acc .ac{padding:0 16px 15px;font-size:13px;color:var(--muted);line-height:1.6}
+.pp-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);box-shadow:0 -10px 30px -18px rgba(10,37,64,.3);padding:11px max(14px,env(safe-area-inset-left,0px)) calc(11px + env(safe-area-inset-bottom,0px))}
+.pp-cta .in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:13px}
+.pp-cta .tot{flex:0 0 auto}.pp-cta .tot .lb{font-size:11px;color:var(--muted);font-weight:600}.pp-cta .tot .vl{font-size:19px;font-weight:800;color:var(--navy-ink)}
+.cta{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;border:0;background:var(--wa);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:12px}
+.cta svg{width:20px;height:20px}
+.cta.disabled{background:#cfd6df}
+.hint{font-size:11.5px;color:var(--muted);text-align:center;margin:9px 0 0}
 
-footer{margin-top:30px;background:var(--nav);color:#c4d2e0;font-size:12px}
-footer .inner{max-width:1260px;margin:0 auto;padding:22px max(12px,env(safe-area-inset-left,0px)) calc(22px + env(safe-area-inset-bottom,0px))}
-footer b{color:#fff}
-.panel-link{position:fixed;bottom:14px;right:14px;z-index:40;background:var(--nav);color:#fff;border:0;font-size:11px;font-weight:700;padding:9px 13px;border-radius:999px;box-shadow:var(--shadow);opacity:.8}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.25s;z-index:90;pointer-events:none;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ===== INFO PAGES ===== */
+.info{max-width:820px;margin:0 auto;padding:8px max(14px,env(safe-area-inset-left,0px)) 70px}
+.info-hero{background:var(--navy);color:#fff;border-radius:var(--radius);padding:30px 26px;margin-top:16px}
+.info-hero h1{font-size:26px;font-weight:800}
+.info-hero p{color:#cadbec;font-size:14px;margin:9px 0 0;max-width:62ch;line-height:1.6}
+.info h2{font-size:18px;font-weight:800;color:var(--navy-ink);margin:28px 0 10px}
+.info h3{font-size:15px;font-weight:700;margin:18px 0 6px}
+.info p{font-size:14.5px;color:#36414f;line-height:1.7;margin:0 0 12px}
+.info ul{padding-left:0;list-style:none;margin:0 0 12px}
+.info ul li{position:relative;padding-left:26px;font-size:14.5px;color:#36414f;line-height:1.6;margin-bottom:9px}
+.info ul li::before{content:"";position:absolute;left:0;top:8px;width:15px;height:15px;border-radius:50%;background:var(--accent-soft)}
+.info ul li::after{content:"";position:absolute;left:5px;top:11px;width:5px;height:5px;border-radius:50%;background:var(--accent-d)}
+.steps{counter-reset:s;display:grid;gap:12px;margin:14px 0}
+.steps .st{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 16px;box-shadow:var(--shadow)}
+.steps .st .n{counter-increment:s;flex:0 0 auto;width:34px;height:34px;border-radius:10px;background:var(--navy);color:#fff;font-weight:800;display:grid;place-items:center}
+.steps .st .n::before{content:counter(s)}
+.steps .st b{display:block;font-size:14.5px;margin-bottom:3px}.steps .st span{font-size:13px;color:var(--muted);line-height:1.55}
+.faq details{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden}
+.faq summary{list-style:none;cursor:pointer;padding:15px 16px;font-weight:700;font-size:14.5px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .x{color:var(--navy-3);font-size:20px;flex:0 0 auto;transition:.2s}.faq details[open] summary .x{transform:rotate(45deg)}
+.faq .a{padding:0 16px 16px;font-size:13.8px;color:#44505f;line-height:1.65}
+.track{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}
+.track input{flex:1;min-width:180px;padding:13px 14px;border:1.5px solid var(--line);border-radius:11px}
+.track button{border:0;background:var(--navy);color:#fff;font-weight:700;padding:13px 20px;border-radius:11px}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0}
+.cc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.cc .ic{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;margin-bottom:10px}
+.cc .ic svg{width:19px;height:19px;color:var(--accent-d)}
+.cc b{display:block;font-size:14px;margin-bottom:3px}.cc a,.cc span{font-size:13.5px;color:var(--muted);word-break:break-word}
+.cc a{color:var(--navy-3);font-weight:600}
+.note{background:var(--accent-soft);border:1px solid #F6D9BC;border-radius:12px;padding:13px 15px;font-size:13.3px;color:#7a4a18;line-height:1.6;margin:14px 0}
+
+/* ===== FOOTER ===== */
+footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
+.foot-top{max-width:1260px;margin:0 auto;padding:30px max(14px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:24px}
+@media(max-width:760px){.foot-top{grid-template-columns:1fr 1fr;gap:22px}}
+.foot-top .m{font-weight:800;font-size:19px;color:#fff}.foot-top .m b{color:var(--accent)}
+.foot-top .about{font-size:12.5px;color:#9fb3c8;margin-top:10px;line-height:1.6;max-width:40ch}
+.foot-top .seal{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:rgba(255,255,255,.06);border-radius:999px;padding:7px 13px;font-size:11.5px;color:#d7e3f0}
+.foot-top .seal svg{width:15px;height:15px;color:var(--accent)}
+.foot-top h5{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#7f95ab;margin:0 0 12px}
+.foot-top a{display:block;color:#c3d2e1;font-size:13px;padding:5px 0;cursor:pointer}
+.foot-top a:hover{color:#fff}
+.foot-bot{border-top:1px solid rgba(255,255,255,.08)}
+.foot-bot .in{max-width:1260px;margin:0 auto;padding:16px max(14px,env(safe-area-inset-left,0px)) calc(16px + env(safe-area-inset-bottom,0px));font-size:11.5px;color:#8ca0b5;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ===== ADMIN (painel) ===== */
 #painel{max-width:1000px;margin:0 auto;padding:16px 14px 60px}
 .pcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
 .pcard h3{font-size:16px;font-weight:800;margin-bottom:10px}
 .cfggrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end}
 .cfggrid label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px}
-.btn{border:0;border-radius:9px;padding:11px 16px;font-weight:700}.btn-ghost{background:#F3F4F6;border:1px solid var(--line)}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700}.btn-ghost{background:var(--surface-2);border:1px solid var(--line)}
 .plist{display:flex;flex-direction:column;gap:8px}
-.prow{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px;min-width:0}
-.prow img{width:44px;height:44px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:7px}
+.prow{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;min-width:0}
+.prow img{width:44px;height:44px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px}
 .prow .i{min-width:0;flex:1}.prow .i .n{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prow .i .m{color:var(--muted);font-size:11.5px}
 .saved{color:var(--ok);font-size:12px;font-weight:700;opacity:0;transition:.3s}.saved.show{opacity:1}
+.panel-link{position:fixed;bottom:14px;right:14px;z-index:40;background:var(--navy);color:#fff;border:0;font-size:11px;font-weight:700;padding:9px 13px;border-radius:999px;box-shadow:var(--shadow);opacity:.75}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:#0E1A2B;color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.25s;z-index:95;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="inner">
+  <div class="bar">
+    <button class="menu-btn" onclick="openMenu()" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
     <div class="logo" onclick="goHome()"><span class="m">IA <b>USA</b></span><span class="t">Importações dos EUA</span></div>
-    <div class="search"><input id="busca" placeholder="Buscar produto dos EUA…" oninput="onBusca()"><button onclick="onBusca()" aria-label="Buscar">🔍</button></div>
-    <div class="wa-top"><svg viewBox="0 0 24 24" fill="#25D366"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg><span class="lbl">Atendimento<b>no WhatsApp</b></span></div>
+    <div class="search"><input id="busca" placeholder="Buscar produto dos EUA…" oninput="onBusca()"><button onclick="onBusca()" aria-label="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button></div>
+    <div class="wa-top" onclick="waGeral()"><span class="ic"><svg viewBox="0 0 24 24" fill="#25D366"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg></span><span class="lbl">Atendimento<b>no WhatsApp</b></span></div>
   </div>
-  <div class="mcats"><div class="inner scrollx" id="mcats"></div></div>
+  <div class="deliverbar"><div class="in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg> <span>Enviado de <b style="color:#fff">Miami, Flórida</b> · chega ao Brasil em 10 a 15 dias úteis, com rastreio</span></div></div>
+  <div class="mcats"><div class="in scrollx" id="mcats"></div></div>
 </div>
 
+<!-- MENU DRAWER -->
+<div class="drawer-bg" id="drawerBg" onclick="closeMenu()"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-top"><span class="m">IA <b>USA</b></span><button onclick="closeMenu()" aria-label="Fechar">✕</button></div>
+  <div id="drawerCats"></div>
+  <h4>Institucional</h4>
+  <a onclick="openInfo('quem')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></svg> Quem somos</a>
+  <a onclick="openInfo('como')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="12" rx="1"/><path d="M16 9h4l3 3v5h-7"/><circle cx="6" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg> Como funciona a importação</a>
+  <a onclick="openInfo('rastreio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg> Rastrear meu pedido</a>
+  <a onclick="openInfo('entrega')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg> Política de entrega</a>
+  <a onclick="openInfo('trocas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v6h6M21 22v-6h-6M21 8A9 9 0 006 4.6L3 8m18 8a9 9 0 01-15 3.4L3 16"/></svg> Trocas e reembolsos</a>
+  <a onclick="openInfo('faq')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3M12 17h.01"/></svg> Perguntas frequentes</a>
+  <a onclick="openInfo('contato')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.2L4 17.2z"/></svg> Contato</a>
+</nav>
+
+<!-- LOJA -->
 <main id="loja">
   <div class="shell">
-    <aside class="side"><div class="side-in"><h3>Departamentos</h3><div id="sideCats"></div></div></aside>
+    <aside class="side"><div class="side-in"><h3>Departamentos</h3><div id="sideCats"></div>
+      <div class="help"><b>Precisa de ajuda?</b><span>Fale com a gente no WhatsApp, atendimento humano.</span></div></div></aside>
     <div class="content">
       <a class="banner" id="bannerBox" onclick="document.getElementById('shelves').scrollIntoView({behavior:'smooth'})">
-        <img src="https://123playamazon-boop.github.io/ia-usa/banner.jpg" alt="Importe dos EUA com segurança e economia" onerror="this.closest('.banner').style.display='none'">
+        <img src="https://123playamazon-boop.github.io/ia-usa/banner.jpg" alt="Importe dos EUA com segurança" loading="eager" onerror="this.closest('.banner').style.display='none'">
       </a>
       <div class="trust">
-        <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7"/></svg><div><b>Originais dos EUA</b><span>Amazon e grandes lojas</span></div></div>
-        <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="12" rx="1"/><path d="M16 9h4l3 3v5h-7"/><circle cx="6" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg><div><b>Entrega 10–15 dias</b><span>Rastreável no Brasil</span></div></div>
-        <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div><b>Pague em reais</b><span>Imposto e frete inclusos</span></div></div>
-        <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg><div><b>Compra segura</b><span>Não chegou? Reembolso</span></div></div>
+        <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7"/></svg></span><div><b>100% originais</b><span>Comprados com nota</span></div></div>
+        <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="12" rx="1"/><path d="M16 9h4l3 3v5h-7"/><circle cx="6" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></span><div><b>Entrega rastreada</b><span>10 a 15 dias</span></div></div>
+        <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><div><b>Preço final em R$</b><span>Imposto e frete inclusos</span></div></div>
+        <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg></span><div><b>Compra protegida</b><span>Não chegou? Reembolso</span></div></div>
       </div>
       <div id="shelves"><div class="loading">Carregando catálogo…</div></div>
     </div>
   </div>
-  <footer><div class="inner"><b>IA USA — Importação dos EUA para o Brasil.</b> Empresa sediada em Miami, Flórida. Compramos original, com nota fiscal, e despachamos com rastreio completo. Entrega em 10 a 15 dias. Pagamento em reais via WhatsApp.</div></footer>
+  <footer>
+    <div class="foot-top">
+      <div><div class="m">IA <b>USA</b></div><p class="about">Importação de produtos originais dos Estados Unidos para o Brasil. Empresa sediada em Miami, Flórida, com estrutura própria de logística.</p>
+        <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg> Compra 100% protegida</span></div>
+      <div><h5>Institucional</h5><a onclick="openInfo('quem')">Quem somos</a><a onclick="openInfo('como')">Como funciona</a><a onclick="openInfo('entrega')">Política de entrega</a></div>
+      <div><h5>Ajuda</h5><a onclick="openInfo('rastreio')">Rastrear pedido</a><a onclick="openInfo('trocas')">Trocas e reembolsos</a><a onclick="openInfo('faq')">Perguntas frequentes</a></div>
+      <div><h5>Contato</h5><a onclick="openInfo('contato')">Fale conosco</a><a onclick="waGeral()">WhatsApp</a><a onclick="openInfo('contato')">Miami, FL · EUA</a></div>
+    </div>
+    <div class="foot-bot"><div class="in"><span id="footCo">IA USA — Importação dos EUA. Empresa sediada em Miami, Flórida.</span><span>Preços com imposto e frete inclusos.</span></div></div>
+  </footer>
 </main>
 
+<!-- PRODUTO -->
+<main id="produto" hidden></main>
+
+<!-- INFO -->
+<main id="info" hidden></main>
+
+<!-- PAINEL -->
 <main id="painel" hidden>
   <div class="pcard"><h3>Configuração</h3>
     <div class="cfggrid">
       <div><label>Nome da loja</label><input class="inp" id="cfgNome"></div>
       <div><label>WhatsApp (55+DDD)</label><input class="inp" id="cfgWa" inputmode="numeric"></div>
+      <div><label>E-mail de contato</label><input class="inp" id="cfgEmail" inputmode="email"></div>
       <div><label>Dólar (R$)</label><input class="inp" id="cfgDolar" inputmode="decimal"></div>
       <div><label>Frete (R$/kg)</label><input class="inp" id="cfgFrete" inputmode="decimal"></div>
       <div><label>ICMS (%)</label><input class="inp" id="cfgIcms" inputmode="decimal"></div>
@@ -205,128 +335,246 @@ footer b{color:#fff}
 </main>
 
 <button class="panel-link" onclick="setView(document.getElementById('painel').hidden?'painel':'loja')" id="panelBtn">Painel</button>
-<div id="sheetHost"></div>
 <div class="toast" id="toast"></div>
 
 <script>
 const SUPABASE_URL="https://qfxemysisbyqevxfihvd.supabase.co";
 const SUPABASE_KEY="sb_publishable_rstAsoIHJqesbNrFK3XJHA_WWrD5rId";
-const BUCKET="produtos";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const BRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const num=s=>{const n=parseFloat(String(s==null?'':s).replace(',','.'));return isNaN(n)?0:n;};
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
-function ph(nm){return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='#f3f4f6'/><text x='150' y='150' font-family='sans-serif' font-size='110' fill='#c6ccd4' text-anchor='middle' dominant-baseline='central'>${(nm||'?').trim()[0]||'?'}</text></svg>`);}
+function ph(nm){return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='#f4f6f9'/><text x='150' y='150' font-family='sans-serif' font-size='110' fill='#c6ccd4' text-anchor='middle' dominant-baseline='central'>${(nm||'?').trim()[0]||'?'}</text></svg>`);}
 window.imgErr=function(el,nm){el.onerror=null;el.src=ph(nm);};
 const CAT_ORDER=['Suplementos','Beleza','Beleza Premium','Cozinha','Casa','Brinquedos','Eletrônicos','Pet','Saúde','Esportes'];
-let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',dolar:5.4,frete_kg:120,icms_percent:17,margem_percent:40}, filtroCat='Todos', termoBusca='';
+let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', termoBusca='';
 
 async function loadAll(){
   try{
     const {data:cfg}=await db.from('config').select('*').eq('id',1).maybeSingle();
-    if(cfg) CONFIG=cfg;
+    if(cfg) CONFIG={...CONFIG,...cfg};
     const {data,error}=await db.from('produtos').select('*, variacoes(tamanho,ordem), fotos(url,ordem)').eq('ativo',true).order('ordem');
     if(error) throw error;
     PRODUTOS=(data||[]).map(p=>({...p,sizes:(p.variacoes||[]).sort((a,b)=>a.ordem-b.ordem).map(v=>v.tamanho),photos:(p.fotos||[]).sort((a,b)=>a.ordem-b.ordem).map(f=>f.url)}));
-    applyConfig(); renderCats(); renderShelves(); renderPanel(); logEvento('visita');
-  }catch(e){ document.getElementById('shelves').innerHTML=`<div class="empty">Erro ao conectar: ${e.message||e}</div>`; }
+    applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); logEvento('visita');
+  }catch(e){ document.getElementById('shelves').innerHTML=`<div class="empty">Erro ao conectar: ${esc(e.message||e)}</div>`; }
 }
 function cats(){ const s=new Set(PRODUTOS.map(p=>p.categoria).filter(Boolean)); return CAT_ORDER.filter(c=>s.has(c)).concat([...s].filter(c=>!CAT_ORDER.includes(c))); }
-function applyConfig(){document.getElementById('cfgNome').value=CONFIG.nome_loja||'';document.getElementById('cfgWa').value=CONFIG.whatsapp||'';document.getElementById('cfgDolar').value=CONFIG.dolar??'';document.getElementById('cfgFrete').value=CONFIG.frete_kg??'';document.getElementById('cfgIcms').value=CONFIG.icms_percent??'';document.getElementById('cfgMargem').value=CONFIG.margem_percent??'';}
+function applyConfig(){const g=id=>document.getElementById(id);g('cfgNome').value=CONFIG.nome_loja||'';g('cfgWa').value=CONFIG.whatsapp||'';if(g('cfgEmail'))g('cfgEmail').value=CONFIG.email||'';g('cfgDolar').value=CONFIG.dolar??'';g('cfgFrete').value=CONFIG.frete_kg??'';g('cfgIcms').value=CONFIG.icms_percent??'';g('cfgMargem').value=CONFIG.margem_percent??'';}
+function updateFooterCo(){document.getElementById('footCo').textContent=`${CONFIG.nome_loja||'IA USA'} — Importação dos EUA. Empresa sediada em Miami, Flórida.`;}
 function img(p){return (p.photos&&p.photos[0])||ph(p.nome);}
 function descPct(p){return (p.preco_de&&p.preco_de>p.preco)?Math.round((1-p.preco/p.preco_de)*100):0;}
-function setView(v){document.getElementById('loja').hidden=v!=='loja';document.getElementById('painel').hidden=v!=='painel';document.getElementById('panelBtn').textContent=v==='painel'?'Ver loja':'Painel';window.scrollTo(0,0);}
+function waNum(){return (CONFIG.whatsapp||'').replace(/\D/g,'');}
+function waGeral(){const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}window.open(`https://wa.me/${n}?text=${encodeURIComponent('Olá! Vim pela loja IA USA e quero tirar uma dúvida. 🙂')}`,'_blank');}
+
+/* ===== VIEWS ===== */
+const VIEWS=['loja','produto','info','painel'];
+function setView(v){VIEWS.forEach(x=>document.getElementById(x).hidden=x!==v);document.getElementById('panelBtn').textContent=v==='painel'?'Ver loja':'Painel';if(v!=='produto')window.scrollTo(0,0);}
 function goHome(){filtroCat='Todos';termoBusca='';document.getElementById('busca').value='';setView('loja');renderCats();renderShelves();window.scrollTo({top:0,behavior:'smooth'});}
+
+/* ===== MENU ===== */
+function openMenu(){const cs=cats();document.getElementById('drawerCats').innerHTML='<h4>Departamentos</h4>'+['Todos',...cs].map(c=>`<a onclick="closeMenu();pickCat('${c.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>${c==='Todos'?'Todos os produtos':c}${c!=='Todos'?`<span class="q">${PRODUTOS.filter(p=>p.categoria===c).length}</span>`:''}</a>`).join('');document.getElementById('drawerBg').classList.add('on');document.getElementById('drawer').classList.add('on');document.body.style.overflow='hidden';}
+function closeMenu(){document.getElementById('drawerBg').classList.remove('on');document.getElementById('drawer').classList.remove('on');document.body.style.overflow='';}
+
+/* ===== CATEGORIES / SHELVES ===== */
 function renderCats(){
   const cs=cats();
   document.getElementById('sideCats').innerHTML=`<a class="item" aria-current="${filtroCat==='Todos'}" onclick="pickCat('Todos')">Todos os produtos</a>`+cs.map(c=>`<a class="item" aria-current="${c===filtroCat}" onclick="pickCat('${c.replace(/'/g,"\\'")}')">${c}<span class="q">${PRODUTOS.filter(p=>p.categoria===c).length}</span></a>`).join('');
   document.getElementById('mcats').innerHTML=['Todos',...cs].map(c=>`<button aria-pressed="${c===filtroCat}" onclick="pickCat('${c.replace(/'/g,"\\'")}')">${c==='Todos'?'Início':c}</button>`).join('');
 }
-function pickCat(c){filtroCat=c;termoBusca='';document.getElementById('busca').value='';renderCats();renderShelves();const el=document.getElementById(filtroCat==='Todos'?'bannerBox':'shelves');window.scrollTo({top:(el.getBoundingClientRect().top+window.scrollY)-96,behavior:'smooth'});}
+function pickCat(c){filtroCat=c;termoBusca='';document.getElementById('busca').value='';setView('loja');renderCats();renderShelves();const el=document.getElementById(filtroCat==='Todos'?'bannerBox':'shelves');if(el)window.scrollTo({top:(el.getBoundingClientRect().top+window.scrollY)-104,behavior:'smooth'});}
 function cardHtml(p){
   const d=descPct(p);
-  return `<article class="card" onclick="openSheet('${p.id}')">
-    <div class="thumb"><img src="${img(p)}" alt="${(p.nome||'').replace(/"/g,'')}" loading="lazy" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')">
-      ${d?`<span class="disc">-${d}%</span>`:''}<span class="usa"><i>🇺🇸</i></span></div>
+  return `<article class="card" onclick="openProduto('${p.id}')">
+    <div class="thumb"><img src="${img(p)}" alt="${esc(p.nome)}" loading="lazy" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')">
+      ${d?`<span class="disc">-${d}%</span>`:''}<span class="usa">🇺🇸</span></div>
     <div class="cbody">
-      <div class="nm">${p.nome}</div>
+      <div class="nm">${esc(p.nome)}</div>
       <div class="pr"><span class="now">${BRL.format(p.preco)}</span>${p.preco_de&&p.preco_de>p.preco?`<span class="old">${BRL.format(p.preco_de)}</span>`:''}</div>
       <div class="save">${d?`Economize ${BRL.format(p.preco_de-p.preco)}`:'&nbsp;'}</div>
-      <div class="shipl">Entrega ${p.prazo||'10–15 dias'} · <b>frete incluso</b></div>
-      <button class="buy" onclick="event.stopPropagation();openSheet('${p.id}')">Comprar agora</button>
+      <div class="shipl">Entrega ${esc(p.prazo||'10–15 dias')} · <b>frete incluso</b></div>
+      <button class="buy" onclick="event.stopPropagation();openProduto('${p.id}')">Ver produto</button>
     </div></article>`;
 }
 function renderShelves(){
   const el=document.getElementById('shelves');
   if(termoBusca){const list=PRODUTOS.filter(p=>(p.nome||'').toLowerCase().includes(termoBusca)||(p.categoria||'').toLowerCase().includes(termoBusca));
-    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>Resultados para "${termoBusca}"</h2></div><div class="grid">${list.length?list.map(cardHtml).join(''):'<div class="empty">Nada encontrado.</div>'}</div></section>`;return;}
+    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>Resultados para "${esc(termoBusca)}"</h2></div><div class="grid">${list.length?list.map(cardHtml).join(''):'<div class="empty">Nada encontrado.</div>'}</div></section>`;return;}
   if(filtroCat!=='Todos'){const prods=PRODUTOS.filter(p=>p.categoria===filtroCat);
-    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>${filtroCat}</h2><a onclick="pickCat('Todos')">‹ Início</a></div><div class="grid">${prods.map(cardHtml).join('')||'<div class="empty">Nenhum produto.</div>'}</div></section>`;return;}
+    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>${esc(filtroCat)}</h2><a onclick="pickCat('Todos')">‹ Início</a></div><div class="grid">${prods.map(cardHtml).join('')||'<div class="empty">Nenhum produto.</div>'}</div></section>`;return;}
   el.innerHTML=cats().map(c=>{const prods=PRODUTOS.filter(p=>p.categoria===c);if(!prods.length)return '';
-    return `<section class="shelf"><div class="shelf-h"><h2>${c}</h2>${prods.length>2?`<a onclick="pickCat('${c.replace(/'/g,"\\'")}')">Ver todos ›</a>`:''}</div><div class="rail">${prods.map(cardHtml).join('')}</div></section>`;}).join('')||'<div class="empty">Nenhum produto.</div>';
+    return `<section class="shelf"><div class="shelf-h"><h2>${esc(c)}</h2>${prods.length>2?`<a onclick="pickCat('${c.replace(/'/g,"\\'")}')">Ver todos ›</a>`:''}</div><div class="rail">${prods.map(cardHtml).join('')}</div></section>`;}).join('')||'<div class="empty">Nenhum produto ativo.</div>';
 }
-function onBusca(){termoBusca=(document.getElementById('busca').value||'').toLowerCase().trim();renderShelves();}
+function onBusca(){termoBusca=(document.getElementById('busca').value||'').toLowerCase().trim();setView('loja');renderShelves();}
 
-let cur=null,curSize=null,curQty=1;
-function openSheet(id){
+/* ===== PRODUCT PAGE ===== */
+let cur=null,curSize=null,curQty=1,curFotos=[];
+function brandOf(p){const b=(p.nome||'').trim().split(/\s+/)[0];return b&&b.length>1?b:(p.categoria||'Importado');}
+function openProduto(id){
   const p=PRODUTOS.find(x=>x.id===id);if(!p)return;
   cur=p;curSize=p.sizes.length?null:'único';curQty=1;logEvento('view',p.id);
   const isVid=p.video_url&&/\.(mp4|webm|mov)$/i.test(p.video_url);
-  const fotos=(p.photos&&p.photos.length)?p.photos:[img(p)];
-  const media=isVid?`<video src="${p.video_url}" controls playsinline></video>`:`<img id="shImg" src="${fotos[0]}" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')" alt="">`;
-  const thumbs=(fotos.length>1&&!isVid)?`<div class="thumbs" id="shThumbs">${fotos.map((u,i)=>`<button class="thumb-b${i===0?' on':''}" onclick="trocaFoto('${u}',this)"><img src="${u}" onerror="imgErr(this,'x')" alt=""></button>`).join('')}</div>`:'';
+  curFotos=(p.photos&&p.photos.length)?p.photos:[img(p)];
   const d=descPct(p);const vlabel=p.variacao_label||'Opção';
-  document.getElementById('sheetHost').innerHTML=`<div class="overlay" onclick="if(event.target===this)closeSheet()">
-    <div class="sheet"><div class="sheet-media">${media}<button class="sheet-x" onclick="closeSheet()">✕</button></div>${thumbs}
-    <div class="sbody">
-      <span class="cat">${p.categoria||''} · Importado dos EUA 🇺🇸</span><h2>${p.nome}</h2>
-      <div class="sprice"><span class="now">${BRL.format(p.preco)}</span>${p.preco_de&&p.preco_de>p.preco?`<span class="old">${BRL.format(p.preco_de)}</span><span class="tag">-${d}%</span>`:''}</div>
-      ${p.descricao?`<p class="desc">${p.descricao}</p>`:''}
-      <div class="tbox">
-        <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Original dos EUA, comprado em loja oficial com nota</div>
-        <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="12" rx="1"/><path d="M16 9h4l3 3v5h-7"/><circle cx="6" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg> Entrega ${p.prazo||'10–15 dias'} · ${p.frete_gratis?'<b>frete grátis</b>':'frete incluso no preço'}</div>
-        <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg> Não chegou ou veio errado? Dinheiro de volta.</div>
+  const media=isVid?`<video src="${esc(p.video_url)}" controls playsinline></video>`:`<img id="ppImg" src="${curFotos[0]}" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')" alt="${esc(p.nome)}">`;
+  const thumbs=(curFotos.length>1&&!isVid)?`<div class="gal-thumbs" id="ppThumbs">${curFotos.map((u,i)=>`<button class="gt${i===0?' on':''}" onclick="ppFoto('${u}',this)"><img src="${u}" onerror="imgErr(this,'x')" alt=""></button>`).join('')}</div>`:'';
+  document.getElementById('produto').innerHTML=`<div class="pp">
+    <div class="crumb"><button class="back" onclick="backToLoja()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg> Voltar</button><span>·</span><a onclick="pickCat('${(p.categoria||'Todos').replace(/'/g,"\\'")}')">${esc(p.categoria||'Produtos')}</a></div>
+    <div class="pp-grid">
+      <div class="gal-wrap"><div class="gal-main">${media}</div>${thumbs}</div>
+      <div class="pp-info">
+        <div class="pp-cat">${esc(p.categoria||'Importado')} · Importado dos EUA 🇺🇸</div>
+        <h1 class="pp-title">${esc(p.nome)}</h1>
+        <div class="pp-meta"><span>Marca: <b>${esc(brandOf(p))}</b></span>${p.asin?`<span>Ref.: <b>${esc(p.asin)}</b></span>`:''}<span>Origem: <b>Estados Unidos</b></span></div>
+        <div class="pp-price"><span class="now">${BRL.format(p.preco)}</span>${p.preco_de&&p.preco_de>p.preco?`<span class="old">${BRL.format(p.preco_de)}</span><span class="tag">-${d}%</span>`:''}</div>
+        <div class="pp-incl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg> Preço final em reais — imposto de importação e frete já inclusos</div>
+        <div class="stock"><span class="dot"></span> Disponível · envio em 1 a 2 dias úteis após o pagamento</div>
+        <div class="pbox">
+          <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7"/></svg><div><b>Produto original</b>, comprado em loja oficial dos EUA com nota fiscal.</div></div>
+          <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="12" rx="1"/><path d="M16 9h4l3 3v5h-7"/><circle cx="6" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg><div>Entrega em <b>${esc(p.prazo||'10 a 15 dias úteis')}</b>, com código de rastreio.</div></div>
+          <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div><b>Sem surpresas na alfândega:</b> imposto e frete internacional já estão no preço.</div></div>
+          <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg><div><b>Compra protegida:</b> não chegou ou veio errado, você recebe o dinheiro de volta.</div></div>
+        </div>
+        ${p.sizes.length?`<div class="field"><label>${esc(vlabel)}</label><div class="sizebtns" id="ppSizes">${p.sizes.map(s=>`<button aria-pressed="false" onclick="ppSize(this)">${esc(s)}</button>`).join('')}</div></div>`:''}
+        <div class="field"><label>Quantidade</label><div class="qtyrow"><button onclick="ppQty(-1)">−</button><input id="ppQty" value="1" readonly><button onclick="ppQty(1)">+</button></div></div>
+        <div class="field"><div class="twoinput"><div><label>Seu nome</label><input class="inp" id="ppName" placeholder="Opcional"></div><div><label>Cidade</label><input class="inp" id="ppCity" placeholder="Opcional"></div></div></div>
+        ${p.descricao?`<div class="field"><label>Sobre o produto</label><div class="pp-desc">${esc(p.descricao)}</div></div>`:''}
+        <div class="acc">
+          <details open><summary>Entrega e rastreamento <span class="x">+</span></summary><div class="ac">A contagem de 10 a 15 dias úteis começa após a confirmação do pagamento. Assim que o pedido é despachado, você recebe o código de rastreio pelo WhatsApp e acompanha até a entrega.</div></details>
+          <details><summary>Impostos e alfândega <span class="x">+</span></summary><div class="ac">O preço que você vê já é o preço final: inclui o imposto de importação e o frete internacional. Você não paga nada a mais na chegada. A empresa cuida de toda a parte alfandegária.</div></details>
+          <details><summary>Garantia e devolução <span class="x">+</span></summary><div class="ac">Produto original de fábrica. Se não chegar, chegar com defeito ou vier diferente do anunciado, você tem direito a reenvio ou reembolso. Você também tem 7 dias de arrependimento após o recebimento (produto lacrado), conforme o Código de Defesa do Consumidor.</div></details>
+          <details><summary>Formas de pagamento <span class="x">+</span></summary><div class="ac">O pagamento é combinado pelo WhatsApp, em reais. Você confirma o endereço e recebe o link de pagamento com as opções disponíveis.</div></details>
+        </div>
       </div>
-      ${p.sizes.length?`<div class="field"><label>${vlabel}</label><div class="sizebtns" id="shSizes">${p.sizes.map(s=>`<button aria-pressed="false" onclick="pickSize(this)">${s}</button>`).join('')}</div></div>`:''}
-      <div class="field"><label>Quantidade</label><div class="qtyrow"><button onclick="setQty(-1)">−</button><input id="shQty" value="1" readonly><button onclick="setQty(1)">+</button></div></div>
-      <div class="twoinput"><div class="field"><label>Seu nome</label><input class="inp" id="shName" placeholder="Opcional"></div>
-        <div class="field"><label>Cidade</label><input class="inp" id="shCity" placeholder="Opcional"></div></div>
     </div>
-    <div class="sticky-cta">
-      <a class="cta" onclick="return goWhats(event)" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.82 9.82 0 001.763 5.62l-.998 3.648 3.733-.967zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.074-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg> Pedir no WhatsApp <span class="tot" id="shTot">· ${BRL.format(p.preco)}</span></a>
-      <p class="hint">Você confirma o endereço e recebe o link de pagamento.</p>
-    </div></div></div>`;
-  document.body.style.overflow='hidden';
+  </div>
+  <div class="pp-cta"><div class="in">
+    <div class="tot"><div class="lb">Total</div><div class="vl" id="ppTot">${BRL.format(p.preco)}</div></div>
+    <button class="cta" id="ppCta" onclick="goWhats(event)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.82 9.82 0 001.763 5.62l-.998 3.648 3.733-.967z"/></svg> Pedir no WhatsApp</button>
+  </div><p class="hint">Você confirma o endereço e recebe o link de pagamento. Atendimento humano.</p></div>`;
+  setView('produto');window.scrollTo(0,0);
 }
-function closeSheet(){document.getElementById('sheetHost').innerHTML='';document.body.style.overflow='';}
-function trocaFoto(u,b){const im=document.getElementById('shImg');if(im)im.src=u;document.querySelectorAll('#shThumbs .thumb-b').forEach(x=>x.classList.toggle('on',x===b));}
-function pickSize(b){curSize=b.textContent;document.querySelectorAll('#shSizes button').forEach(x=>x.setAttribute('aria-pressed',x===b));}
-function setQty(d){curQty=Math.max(1,curQty+d);document.getElementById('shQty').value=curQty;document.getElementById('shTot').textContent='· '+BRL.format(cur.preco*curQty);}
+function backToLoja(){setView('loja');}
+function ppFoto(u,b){const im=document.getElementById('ppImg');if(im)im.src=u;document.querySelectorAll('#ppThumbs .gt').forEach(x=>x.classList.toggle('on',x===b));}
+function ppSize(b){curSize=b.textContent;document.querySelectorAll('#ppSizes button').forEach(x=>x.setAttribute('aria-pressed',x===b));}
+function ppQty(d){curQty=Math.max(1,curQty+d);document.getElementById('ppQty').value=curQty;document.getElementById('ppTot').textContent=BRL.format(cur.preco*curQty);}
 function custoBrl(p){ if(!p.preco_usd) return p.custo||0;
-  const d=num(CONFIG.dolar)||5.4,fk=num(CONFIG.frete_kg)||120,ic=(num(CONFIG.icms_percent)||17)/100;
+  const d=num(CONFIG.dolar)||5.4,fk=num(CONFIG.frete_kg)||50,ic=(num(CONFIG.icms_percent)||17)/100;
   const prod=p.preco_usd*d,frete=(p.peso_kg||0.3)*fk,base=p.preco_usd+frete/d;
   let ii=base<=50?0:(0.6*(prod+frete)-30*d);if(ii<0)ii=0;return (prod+frete+ii)/(1-ic);}
 function goWhats(e){
   e.preventDefault();
   if(cur.sizes.length&&!curSize){toast('Escolha uma opção primeiro.');return false;}
   const total=cur.preco*curQty;
-  const name=(document.getElementById('shName').value||'').trim(), city=(document.getElementById('shCity').value||'').trim();
+  const name=(document.getElementById('ppName').value||'').trim(), city=(document.getElementById('ppCity').value||'').trim();
   const vlabel=cur.variacao_label||'Opção';
   let m=`Olá! Quero importar este produto 👇\n\n*${cur.nome}*\n`;
   if(curSize&&curSize!=='único')m+=`*${vlabel}:* ${curSize}\n`;
   m+=`*Qtd:* ${curQty}\n*Total:* ${BRL.format(total)} (frete e imposto inclusos)\n*Entrega:* ${cur.prazo||'10 a 15 dias'}\n`;
   if(name||city){m+=`\n`;if(name)m+=`*Nome:* ${name}\n`;if(city)m+=`*Cidade:* ${city}\n`;}
   m+=`\nPode confirmar e me passar o endereço e a forma de pagamento? 🙏`;
-  const n=(CONFIG.whatsapp||'').replace(/\D/g,'');
-  if(!n){toast('Configure o WhatsApp no Painel.');return false;}
+  const n=waNum();
+  if(!n){toast('WhatsApp não configurado.');return false;}
   const cb=custoBrl(cur), lucro=Math.round((cur.preco-cb)*curQty*100)/100;
   db.from('pedidos').insert({produto_id:cur.id,produto_nome:cur.nome,asin:cur.asin||null,tamanho:curSize,qtd:curQty,valor:total,frete:0,total,custo_brl:cb,lucro,cliente_nome:name||null,cliente_cidade:city||null}).then(()=>{});
   window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');return false;
 }
 function logEvento(tipo,pid){try{db.from('eventos').insert({tipo,produto_id:pid||null}).then(()=>{});}catch(e){}}
+
+/* ===== INFO PAGES ===== */
+function infoContent(key){
+  const wa=waNum(), email=CONFIG.email||'', loja=CONFIG.nome_loja||'IA USA';
+  const P={
+    quem:{t:'Quem somos',s:'Somos uma operação de importação com base em Miami, Flórida — compramos produtos originais nos Estados Unidos e entregamos no Brasil, com tudo acompanhado de perto.',h:`
+      <p>A <b>${esc(loja)}</b> nasceu para resolver um problema simples: brasileiros querem produtos originais dos Estados Unidos, mas esbarram em preço de dólar escondido, frete imprevisível e medo de não receber. A gente tira esse peso das suas costas.</p>
+      <p>Operamos a partir de <b>Miami, Flórida</b>, com estrutura própria de logística. Cada produto é comprado em loja oficial (Amazon, Walmart e grandes varejistas), <b>com nota fiscal</b>, conferido antes de embarcar e despachado para o Brasil com rastreio do início ao fim.</p>
+      <h2>Por que comprar com a gente</h2>
+      <ul><li><b>Preço final em reais</b>, com imposto de importação e frete internacional já inclusos — sem surpresa na alfândega.</li>
+      <li><b>Produtos 100% originais</b>, comprados com nota em lojas oficiais dos EUA.</li>
+      <li><b>Entrega rastreada</b> em 10 a 15 dias úteis, acompanhada pelo WhatsApp.</li>
+      <li><b>Atendimento humano</b>: uma pessoa fecha a compra com você e te acompanha até receber.</li></ul>`},
+    como:{t:'Como funciona a importação',s:'Do clique ao recebimento, em 4 passos simples. A gente cuida da parte difícil — você só acompanha.',h:`
+      <div class="steps">
+        <div class="st"><div class="n"></div><div><b>1. Você escolhe e fala no WhatsApp</b><span>Escolhe o produto na loja e clica em "Pedir no WhatsApp". A gente confirma o valor final (já com imposto e frete) e o endereço de entrega.</span></div></div>
+        <div class="st"><div class="n"></div><div><b>2. Compramos nos EUA, com nota</b><span>Após o pagamento, nossa equipe em Miami compra o produto original em loja oficial e confere item e embalagem.</span></div></div>
+        <div class="st"><div class="n"></div><div><b>3. Despacho e rastreio</b><span>O pedido é enviado para o Brasil com código de rastreio. Você recebe o código pelo WhatsApp e acompanha cada etapa.</span></div></div>
+        <div class="st"><div class="n"></div><div><b>4. Entrega na sua casa</b><span>O produto chega em 10 a 15 dias úteis. Toda a parte alfandegária é cuidada pela nossa operação — você não paga nada a mais na chegada.</span></div></div>
+      </div>
+      <div class="note">A contagem do prazo começa na <b>confirmação do pagamento</b>. Dias úteis não incluem fins de semana e feriados. Prazos de alfândega podem variar, e qualquer imprevisto é avisado pelo WhatsApp.</div>`},
+    rastreio:{t:'Rastrear meu pedido',s:'Acompanhe seu pedido de ponta a ponta. Veja abaixo como funciona o rastreio.',h:`
+      <p>Assim que o seu pedido é despachado de Miami, você recebe um <b>código de rastreio</b> pelo WhatsApp. Com ele dá para acompanhar cada etapa: saída dos EUA, chegada ao Brasil, alfândega e entrega.</p>
+      <h2>Consultar status agora</h2>
+      <p>Informe o número do pedido ou o WhatsApp usado na compra e a gente te passa o status atualizado na hora.</p>
+      <div class="track"><input id="trk" placeholder="Nº do pedido ou seu WhatsApp"><button onclick="trackGo()">Consultar no WhatsApp</button></div>
+      <div class="steps">
+        <div class="st"><div class="n"></div><div><b>Pagamento confirmado</b><span>Seu pedido entra na fila de compra em Miami.</span></div></div>
+        <div class="st"><div class="n"></div><div><b>Comprado e despachado</b><span>Você recebe o código de rastreio pelo WhatsApp.</span></div></div>
+        <div class="st"><div class="n"></div><div><b>Em trânsito e alfândega</b><span>O pacote viaja para o Brasil e passa pela alfândega — tudo cuidado pela gente.</span></div></div>
+        <div class="st"><div class="n"></div><div><b>Entregue</b><span>Chega no endereço informado, em 10 a 15 dias úteis.</span></div></div>
+      </div>`},
+    entrega:{t:'Política de entrega',s:'Prazos claros, sem letra miúda. Veja quando seu pedido chega e como contamos o prazo.',h:`
+      <h2>Prazo de entrega</h2>
+      <p>O prazo estimado é de <b>10 a 15 dias úteis</b>. A contagem começa a partir da <b>confirmação do pagamento</b> — não da data em que você fez o pedido.</p>
+      <ul><li><b>Dias úteis:</b> não contamos sábados, domingos e feriados.</li>
+      <li><b>Rastreio:</b> você acompanha todas as etapas pelo código enviado no WhatsApp.</li>
+      <li><b>Alfândega:</b> toda a parte de desembaraço é feita pela nossa operação. Em casos raros, a alfândega pode reter um pacote por mais tempo — se isso acontecer, avisamos você na hora.</li></ul>
+      <h2>Onde entregamos</h2>
+      <p>Entregamos em todo o Brasil, no endereço que você confirmar no atendimento. O frete internacional já está incluso no preço do produto.</p>
+      <div class="note">Se o prazo estourar por um motivo fora do previsto, a gente te mantém informado e resolve — reenvio ou reembolso, você escolhe.</div>`},
+    trocas:{t:'Trocas e reembolsos',s:'Compra protegida de verdade. Se algo sair do combinado, você não fica no prejuízo.',h:`
+      <h2>Quando você tem direito a reembolso ou reenvio</h2>
+      <ul><li>O produto <b>não chegou</b> dentro do prazo acordado.</li>
+      <li>Chegou com <b>defeito de fábrica</b>.</li>
+      <li>Veio <b>diferente do anunciado</b> (modelo, cor ou variação errada).</li></ul>
+      <h2>Direito de arrependimento</h2>
+      <p>Para compras feitas à distância, você tem <b>7 dias corridos após o recebimento</b> para desistir, conforme o art. 49 do Código de Defesa do Consumidor. Nesse caso, o produto deve estar <b>lacrado e sem uso</b>.</p>
+      <h2>Como solicitar</h2>
+      <div class="steps">
+        <div class="st"><div class="n"></div><div><b>Fale com a gente no WhatsApp</b><span>Em até 7 dias após receber, com o número do pedido e, se for o caso, uma foto do problema.</span></div></div>
+        <div class="st"><div class="n"></div><div><b>Analisamos e resolvemos</b><span>Confirmado o caso, você escolhe entre reenvio do produto ou reembolso do valor pago.</span></div></div>
+      </div>
+      <h2>Responsabilidades</h2>
+      <ul><li><b>Cliente:</b> conferir o endereço e os dados informados no fechamento do pedido.</li>
+      <li><b>${esc(loja)}:</b> entregar um produto original, dentro do prazo, e responder por falhas de transporte até a entrega.</li></ul>`},
+    faq:{t:'Perguntas frequentes',s:'As dúvidas mais comuns sobre alfândega, impostos, garantia, originalidade e pagamento.',faq:[
+      ['Vou pagar imposto na alfândega?','Não. O preço que você vê já é o preço final, com o imposto de importação e o frete internacional inclusos. Você não paga nada a mais na chegada — a parte alfandegária é toda cuidada pela nossa operação.'],
+      ['Os produtos são originais?','Sim, 100% originais. Compramos em lojas oficiais dos Estados Unidos (Amazon, Walmart e grandes varejistas), sempre com nota fiscal.'],
+      ['Qual o prazo de entrega?','De 10 a 15 dias úteis, contados a partir da confirmação do pagamento. Você acompanha tudo pelo código de rastreio enviado no WhatsApp.'],
+      ['Como funciona o pagamento?','O pagamento é combinado pelo WhatsApp, em reais. Você confirma o endereço e recebe um link de pagamento com as opções disponíveis.'],
+      ['Tem garantia?','Sim. Produto original de fábrica. Se não chegar, vier com defeito ou diferente do anunciado, você tem direito a reenvio ou reembolso, além dos 7 dias de arrependimento previstos em lei.'],
+      ['Como acompanho meu pedido?','Assim que despachado, você recebe o código de rastreio pelo WhatsApp e acompanha cada etapa até a entrega.'],
+      ['De onde os produtos são enviados?','Da nossa operação em Miami, Flórida. Compramos e conferimos nos EUA antes de despachar para o Brasil.']]},
+    contato:{t:'Contato',s:'Fale com a gente. Atendimento humano, de pessoa para pessoa.',h:`
+      <div class="contact-grid">
+        <div class="cc"><div class="ic"><svg viewBox="0 0 24 24" fill="#25D366"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg></div><b>WhatsApp</b>${wa?`<a onclick="waGeral()">Chamar no WhatsApp</a>`:`<span>Em breve</span>`}</div>
+        <div class="cc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div><b>E-mail</b>${email?`<a href="mailto:${esc(email)}">${esc(email)}</a>`:`<span>Atendimento pelo WhatsApp</span>`}</div>
+        <div class="cc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><b>Onde estamos</b><span>Miami, Flórida — Estados Unidos</span></div>
+      </div>
+      <h2>Empresa responsável</h2>
+      <p><b>${esc(loja)}</b> — importação de produtos dos Estados Unidos para o Brasil. Operação sediada em Miami, Flórida, EUA.</p>
+      <div class="note">Horário de atendimento: segunda a sexta, em horário comercial. Mensagens fora do horário são respondidas no próximo dia útil.</div>`}
+  };
+  return P[key]||P.quem;
+}
+function openInfo(key){
+  closeMenu();
+  const c=infoContent(key);
+  let body=c.h||'';
+  if(c.faq){body='<div class="faq">'+c.faq.map(([q,a])=>`<details><summary>${esc(q)} <span class="x">+</span></summary><div class="a">${esc(a)}</div></details>`).join('')+'</div>';}
+  document.getElementById('info').innerHTML=`<div class="info">
+    <button class="back" onclick="backToLoja()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg> Voltar à loja</button>
+    <div class="info-hero"><h1>${esc(c.t)}</h1><p>${esc(c.s)}</p></div>
+    ${body}
+  </div>`;
+  setView('info');window.scrollTo(0,0);
+}
+function trackGo(){const v=(document.getElementById('trk')?.value||'').trim();const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}const msg=v?`Olá! Quero saber o status do meu pedido. Referência: ${v}`:'Olá! Quero rastrear o status do meu pedido. 🙂';window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank');}
+
+/* ===== PANEL ===== */
 function renderPanel(){const el=document.getElementById('plist');if(!PRODUTOS.length){el.innerHTML='<div class="empty">Nenhum produto.</div>';return;}
-  el.innerHTML=PRODUTOS.map(p=>`<div class="prow"><img src="${img(p)}" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')"><div class="i"><div class="n">${p.nome}</div><div class="m">${p.categoria||'—'} · ${BRL.format(p.preco)}${p.preco_usd?` · US$${p.preco_usd}`:''}</div></div></div>`).join('');}
-async function saveConfig(){try{const c={id:1,nome_loja:document.getElementById('cfgNome').value.trim(),whatsapp:document.getElementById('cfgWa').value.replace(/\D/g,''),dolar:num(document.getElementById('cfgDolar').value)||5.4,frete_kg:num(document.getElementById('cfgFrete').value)||120,icms_percent:num(document.getElementById('cfgIcms').value)||17,margem_percent:num(document.getElementById('cfgMargem').value)||40};await db.from('config').upsert(c);CONFIG=c;applyConfig();const s=document.getElementById('cfgSaved');s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1500);}catch(e){toast('Erro: '+(e.message||e));}}
+  el.innerHTML=PRODUTOS.map(p=>`<div class="prow"><img src="${img(p)}" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')"><div class="i"><div class="n">${esc(p.nome)}</div><div class="m">${esc(p.categoria||'—')} · ${BRL.format(p.preco)}${p.preco_usd?` · US$${p.preco_usd}`:''}</div></div></div>`).join('');}
+async function saveConfig(){try{const g=id=>document.getElementById(id);const c={id:1,nome_loja:g('cfgNome').value.trim(),whatsapp:g('cfgWa').value.replace(/\D/g,''),email:(g('cfgEmail')?.value||'').trim(),dolar:num(g('cfgDolar').value)||5.4,frete_kg:num(g('cfgFrete').value)||50,icms_percent:num(g('cfgIcms').value)||17,margem_percent:num(g('cfgMargem').value)||40};await db.from('config').upsert(c);CONFIG={...CONFIG,...c};applyConfig();updateFooterCo();const s=document.getElementById('cfgSaved');s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1500);}catch(e){toast('Erro: '+(e.message||e));}}
 loadAll();
 </script>
 </body>
