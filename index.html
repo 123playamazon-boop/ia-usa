@@ -311,9 +311,6 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
         <p>Encontre produtos originais dos Estados Unidos e compre pelo WhatsApp, com uma assistente inteligente que acompanha você de ponta a ponta — do preço ao rastreio.</p>
         <div class="hero-cta"><button class="hp" onclick="document.getElementById('shelves').scrollIntoView({behavior:'smooth'})">Ver produtos</button><button class="hs" onclick="waGeral()">Falar com a IA →</button></div>
       </section>
-      <a class="banner" id="bannerBox" onclick="document.getElementById('shelves').scrollIntoView({behavior:'smooth'})">
-        <img src="https://123playamazon-boop.github.io/ia-usa/banner.jpg" alt="Importe dos EUA com segurança" loading="eager" onerror="this.closest('.banner').style.display='none'">
-      </a>
       <div class="trust">
         <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7"/></svg></span><div><b>100% originais</b><span>Comprados com nota</span></div></div>
         <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="12" rx="1"/><path d="M16 9h4l3 3v5h-7"/><circle cx="6" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></span><div><b>Entrega rastreada</b><span>10 a 15 dias</span></div></div>
@@ -369,7 +366,7 @@ const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 function ph(nm){return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='#f4f6f9'/><text x='150' y='150' font-family='sans-serif' font-size='110' fill='#c6ccd4' text-anchor='middle' dominant-baseline='central'>${(nm||'?').trim()[0]||'?'}</text></svg>`);}
 window.imgErr=function(el,nm){el.onerror=null;el.src=ph(nm);};
-const CAT_ORDER=['Suplementos','Beleza','Beleza Premium','Cozinha','Casa','Brinquedos','Eletrônicos','Pet','Saúde','Esportes'];
+const CAT_ORDER=['Eletrônicos','Gaming','Colecionáveis','Perfumes','Beleza','Beleza Premium','Suplementos','Brinquedos','Cozinha','Casa','Pet','Saúde','Esportes'];
 let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', termoBusca='';
 
 async function loadAll(){
@@ -416,7 +413,7 @@ function renderCats(){
   document.getElementById('sideCats').innerHTML=`<a class="item" aria-current="${filtroCat==='Todos'}" onclick="pickCat('Todos')">Todos os produtos</a>`+cs.map(c=>`<a class="item" aria-current="${c===filtroCat}" onclick="pickCat('${c.replace(/'/g,"\\'")}')">${c}<span class="q">${PRODUTOS.filter(p=>p.categoria===c).length}</span></a>`).join('');
   document.getElementById('mcats').innerHTML=['Todos',...cs].map(c=>`<button aria-pressed="${c===filtroCat}" onclick="pickCat('${c.replace(/'/g,"\\'")}')">${c==='Todos'?'Início':c}</button>`).join('');
 }
-function pickCat(c){filtroCat=c;termoBusca='';document.getElementById('busca').value='';setView('loja');renderCats();renderShelves();const el=document.getElementById(filtroCat==='Todos'?'bannerBox':'shelves');if(el)window.scrollTo({top:(el.getBoundingClientRect().top+window.scrollY)-104,behavior:'smooth'});}
+function pickCat(c){filtroCat=c;termoBusca='';document.getElementById('busca').value='';setView('loja');renderCats();renderShelves();if(filtroCat==='Todos'){window.scrollTo({top:0,behavior:'smooth'});}else{const el=document.getElementById('shelves');if(el)window.scrollTo({top:(el.getBoundingClientRect().top+window.scrollY)-104,behavior:'smooth'});}}
 function cardHtml(p){
   const d=descPct(p);
   return `<article class="card" onclick="openProduto('${p.id}')">
