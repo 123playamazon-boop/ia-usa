@@ -122,6 +122,13 @@ img{max-width:100%}
 .shelf-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .shelf-h h2{font-size:18px;font-weight:800;color:var(--navy-ink)}
 .shelf-h a{color:var(--accent-d);font-size:13px;font-weight:700;cursor:pointer}
+.subchips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.subchips::-webkit-scrollbar{display:none}
+.subchips button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--navy-ink);font-size:13px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.15s}
+.subchips button span{color:var(--faint);font-weight:600;margin-left:3px;font-size:12px}
+.subchips button:hover{border-color:var(--navy-3)}
+.subchips button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.subchips button[aria-pressed="true"] span{color:#aac3de}
 .rail{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .rail::-webkit-scrollbar{display:none}
 .rail .card{flex:0 0 var(--card-w)}
@@ -416,7 +423,7 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 function ph(nm){return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='#f4f6f9'/><text x='150' y='150' font-family='sans-serif' font-size='110' fill='#c6ccd4' text-anchor='middle' dominant-baseline='central'>${(nm||'?').trim()[0]||'?'}</text></svg>`);}
 window.imgErr=function(el,nm){el.onerror=null;el.src=ph(nm);};
 const CAT_ORDER=['Suplementos','Eletrônicos','Beleza','Perfumes','Colecionáveis','Gaming','Brinquedos','Bebê','Beleza Premium','Cozinha','Papelaria','Esportes','Pet','Alimentos','Casa','Saúde'];
-let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', termoBusca='';
+let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', filtroSub='Todos', termoBusca='';
 
 async function loadAll(){
   try{
@@ -462,7 +469,8 @@ function renderCats(){
   document.getElementById('sideCats').innerHTML=`<a class="item" aria-current="${filtroCat==='Todos'}" onclick="pickCat('Todos')">Todos os produtos</a>`+cs.map(c=>`<a class="item" aria-current="${c===filtroCat}" onclick="pickCat('${c.replace(/'/g,"\\'")}')">${c}<span class="q">${PRODUTOS.filter(p=>p.categoria===c).length}</span></a>`).join('');
   document.getElementById('mcats').innerHTML=['Todos',...cs].map(c=>`<button aria-pressed="${c===filtroCat}" onclick="pickCat('${c.replace(/'/g,"\\'")}')">${c==='Todos'?'Início':c}</button>`).join('');
 }
-function pickCat(c){filtroCat=c;termoBusca='';document.getElementById('busca').value='';setView('loja');renderCats();renderShelves();if(filtroCat==='Todos'){window.scrollTo({top:0,behavior:'smooth'});}else{const el=document.getElementById('shelves');if(el)window.scrollTo({top:(el.getBoundingClientRect().top+window.scrollY)-104,behavior:'smooth'});}}
+function pickCat(c){filtroCat=c;filtroSub='Todos';termoBusca='';document.getElementById('busca').value='';setView('loja');renderCats();renderShelves();if(filtroCat==='Todos'){window.scrollTo({top:0,behavior:'smooth'});}else{const el=document.getElementById('shelves');if(el)window.scrollTo({top:(el.getBoundingClientRect().top+window.scrollY)-104,behavior:'smooth'});}}
+function pickSub(s){filtroSub=s;renderShelves();const el=document.getElementById('shelves');if(el)window.scrollTo({top:(el.getBoundingClientRect().top+window.scrollY)-104,behavior:'smooth'});}
 function cardHtml(p){
   const d=descPct(p);
   return `<article class="card" onclick="openProduto('${p.id}')">
@@ -481,8 +489,13 @@ function renderShelves(){
   if(termoBusca){const list=PRODUTOS.filter(p=>(p.nome||'').toLowerCase().includes(termoBusca)||(p.categoria||'').toLowerCase().includes(termoBusca));
     const askAI=`<div class="askai"><div><b>Procura algo específico dos EUA?</b><span>Mesmo que não esteja no site, nossa IA acha e importa pra você.</span></div><button onclick="searchAI()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg> Pedir pra IA</button></div>`;
     el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>Resultados para "${esc(termoBusca)}"</h2></div><div class="grid">${list.length?list.map(cardHtml).join(''):'<div class="empty">Nenhum produto no site com esse nome — mas a IA pode importar pra você 👇</div>'}</div>${askAI}</section>`;return;}
-  if(filtroCat!=='Todos'){const prods=PRODUTOS.filter(p=>p.categoria===filtroCat);
-    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>${esc(filtroCat)}</h2><a onclick="pickCat('Todos')">‹ Início</a></div><div class="grid">${prods.map(cardHtml).join('')||'<div class="empty">Nenhum produto.</div>'}</div></section>`;return;}
+  if(filtroCat!=='Todos'){const all=PRODUTOS.filter(p=>p.categoria===filtroCat);
+    const subMap={};all.forEach(p=>{const s=p.subcategoria||'Outros';subMap[s]=(subMap[s]||0)+1;});
+    const subs=Object.keys(subMap).sort((a,b)=>subMap[b]-subMap[a]);
+    if(filtroSub!=='Todos'&&!subMap[filtroSub])filtroSub='Todos';
+    const prods=(filtroSub==='Todos')?all:all.filter(p=>(p.subcategoria||'Outros')===filtroSub);
+    const chips=subs.length>1?`<div class="subchips"><button aria-pressed="${filtroSub==='Todos'}" onclick="pickSub('Todos')">Todos <span>${all.length}</span></button>`+subs.map(s=>`<button aria-pressed="${s===filtroSub}" onclick="pickSub('${s.replace(/'/g,"\\'")}')">${esc(s)} <span>${subMap[s]}</span></button>`).join('')+`</div>`:'';
+    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>${esc(filtroCat)}</h2><a onclick="pickCat('Todos')">‹ Início</a></div>${chips}<div class="grid">${prods.map(cardHtml).join('')||'<div class="empty">Nenhum produto.</div>'}</div></section>`;return;}
   el.innerHTML=cats().map(c=>{const prods=PRODUTOS.filter(p=>p.categoria===c);if(!prods.length)return '';
     return `<section class="shelf"><div class="shelf-h"><h2>${esc(c)}</h2>${prods.length>2?`<a onclick="pickCat('${c.replace(/'/g,"\\'")}')">Ver todos ›</a>`:''}</div><div class="rail">${prods.map(cardHtml).join('')}</div></section>`;}).join('')||'<div class="empty">Nenhum produto ativo.</div>';
 }
