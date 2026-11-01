@@ -334,7 +334,6 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
   <div class="pcard"><h3>Produtos no catálogo</h3><div class="plist" id="plist"></div></div>
 </main>
 
-<button class="panel-link" onclick="setView(document.getElementById('painel').hidden?'painel':'loja')" id="panelBtn">Painel</button>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -357,7 +356,7 @@ async function loadAll(){
     const {data,error}=await db.from('produtos').select('*, variacoes(tamanho,ordem), fotos(url,ordem)').eq('ativo',true).order('ordem');
     if(error) throw error;
     PRODUTOS=(data||[]).map(p=>({...p,sizes:(p.variacoes||[]).sort((a,b)=>a.ordem-b.ordem).map(v=>v.tamanho),photos:(p.fotos||[]).sort((a,b)=>a.ordem-b.ordem).map(f=>f.url)}));
-    applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); logEvento('visita');
+    applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); checkAdmin(); logEvento('visita');
   }catch(e){ document.getElementById('shelves').innerHTML=`<div class="empty">Erro ao conectar: ${esc(e.message||e)}</div>`; }
 }
 function cats(){ const s=new Set(PRODUTOS.map(p=>p.categoria).filter(Boolean)); return CAT_ORDER.filter(c=>s.has(c)).concat([...s].filter(c=>!CAT_ORDER.includes(c))); }
@@ -370,8 +369,11 @@ function waGeral(){const n=waNum();if(!n){toast('WhatsApp não configurado.');re
 
 /* ===== VIEWS ===== */
 const VIEWS=['loja','produto','info','painel'];
-function setView(v){VIEWS.forEach(x=>document.getElementById(x).hidden=x!==v);document.getElementById('panelBtn').textContent=v==='painel'?'Ver loja':'Painel';if(v!=='produto')window.scrollTo(0,0);}
-function goHome(){filtroCat='Todos';termoBusca='';document.getElementById('busca').value='';setView('loja');renderCats();renderShelves();window.scrollTo({top:0,behavior:'smooth'});}
+function setView(v){VIEWS.forEach(x=>document.getElementById(x).hidden=x!==v);if(v!=='produto')window.scrollTo(0,0);}
+function goHome(){filtroCat='Todos';termoBusca='';document.getElementById('busca').value='';if(location.hash)history.replaceState(null,'',location.pathname+location.search);setView('loja');renderCats();renderShelves();window.scrollTo({top:0,behavior:'smooth'});}
+/* Painel de administração: acesso só por link secreto (…/#admin), nunca visível ao cliente */
+function checkAdmin(){const h=(location.hash||'').toLowerCase();if(h==='#admin'||h==='#painel'){setView('painel');}else if(!document.getElementById('painel').hidden){setView('loja');}}
+window.addEventListener('hashchange',checkAdmin);
 
 /* ===== MENU ===== */
 function openMenu(){const cs=cats();document.getElementById('drawerCats').innerHTML='<h4>Departamentos</h4>'+['Todos',...cs].map(c=>`<a onclick="closeMenu();pickCat('${c.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>${c==='Todos'?'Todos os produtos':c}${c!=='Todos'?`<span class="q">${PRODUTOS.filter(p=>p.categoria===c).length}</span>`:''}</a>`).join('');document.getElementById('drawerBg').classList.add('on');document.getElementById('drawer').classList.add('on');document.body.style.overflow='hidden';}
