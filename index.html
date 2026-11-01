@@ -355,10 +355,10 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
       <div class="help"><b>Precisa de ajuda?</b><span>Fale com a gente no WhatsApp, atendimento humano.</span></div></div></aside>
     <div class="content">
       <section class="hero">
-        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 015 5v1a5 5 0 01-10 0V7a5 5 0 015-5z"/><path d="M5 21v-1a7 7 0 0114 0v1"/></svg> Assistente de compras com IA</span>
-        <h1>Você escolhe o produto.<br><b>Nossa IA cuida da importação.</b></h1>
-        <p>Encontre produtos originais dos Estados Unidos e compre pelo WhatsApp, com uma assistente inteligente que acompanha você de ponta a ponta — do preço ao rastreio.</p>
-        <div class="hero-cta"><button class="hp" onclick="document.getElementById('shelves').scrollIntoView({behavior:'smooth'})">Ver produtos</button><button class="hs" onclick="waGeral()">Falar com a IA →</button></div>
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 015 5v1a5 5 0 01-10 0V7a5 5 0 015-5z"/><path d="M5 21v-1a7 7 0 0114 0v1"/></svg> Operação Direct Box USA · Miami, FL · +5 anos</span>
+        <h1>Produtos originais dos EUA na sua casa<br><b>pelo preço de lá, sem susto na alfândega.</b></h1>
+        <p>Você escolhe o produto. <b>Nosso time em Miami</b> compra com nota fiscal, confere e despacha pra você — preço final em reais, imposto e frete já inclusos, com rastreio de ponta a ponta. Gente de verdade cuidando da sua importação, há mais de 5 anos.</p>
+        <div class="hero-cta"><button class="hp" onclick="document.getElementById('shelves').scrollIntoView({behavior:'smooth'})">Ver produtos</button><button class="hs" onclick="waGeral()">Falar com nosso time →</button></div>
       </section>
       <div class="trust">
         <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7"/></svg></span><div><b>100% originais</b><span>Comprados com nota</span></div></div>
@@ -371,7 +371,7 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
   </div>
   <footer>
     <div class="foot-top">
-      <div><div class="m">IA <b>USA</b></div><p class="about">Importação de produtos originais dos Estados Unidos para o Brasil. Empresa sediada em Miami, Flórida, com estrutura própria de logística.</p>
+      <div><div class="m">IA <b>USA</b></div><p class="about">Importação de produtos originais dos Estados Unidos para o Brasil. Operada pela <b>Direct Box USA</b> — centro de preparação próprio em Miami, Flórida, LLC americana com mais de 5 anos de operação.</p>
         <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg> Compra 100% protegida</span></div>
       <div><h5>Institucional</h5><a onclick="openInfo('quem')">Quem somos</a><a onclick="openInfo('como')">Como funciona</a><a onclick="openInfo('entrega')">Política de entrega</a></div>
       <div><h5>Ajuda</h5><a onclick="openInfo('rastreio')">Rastrear pedido</a><a onclick="openInfo('trocas')">Trocas e reembolsos</a><a onclick="openInfo('faq')">Perguntas frequentes</a></div>
@@ -489,7 +489,7 @@ function cardHtml(p){
 function renderShelves(){
   const el=document.getElementById('shelves');
   if(termoBusca){const list=PRODUTOS.filter(p=>(p.nome||'').toLowerCase().includes(termoBusca)||(p.categoria||'').toLowerCase().includes(termoBusca));
-    const askAI=`<div class="askai"><div><b>Procura algo específico dos EUA?</b><span>Mesmo que não esteja no site, nossa IA acha e importa pra você.</span></div><button onclick="searchAI()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg> Pedir pra IA</button></div>`;
+    const askAI=`<div class="askai"><div><b>Procura algo específico dos EUA?</b><span>Mesmo que não esteja no site, nosso time em Miami acha e importa pra você.</span></div><button onclick="searchAI()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg> Pedir pro nosso time</button></div>`;
     el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>Resultados para "${esc(termoBusca)}"</h2></div><div class="grid">${list.length?list.map(cardHtml).join(''):'<div class="empty">Nenhum produto no site com esse nome — mas a IA pode importar pra você 👇</div>'}</div>${askAI}</section>`;return;}
   if(filtroCat!=='Todos'){const all=PRODUTOS.filter(p=>p.categoria===filtroCat);
     const subMap={};all.forEach(p=>{const s=p.subcategoria||'Outros';subMap[s]=(subMap[s]||0)+1;});
@@ -551,7 +551,7 @@ function openProduto(id,fromHash){
   <div class="pp-cta"><div class="in">
     <div class="tot"><div class="lb">Total</div><div class="vl" id="ppTot">${BRL.format(p.preco)}</div></div>
     <button class="cta" id="ppCta" style="background:var(--accent)" onclick="addToCart(cur.id,curQty)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Adicionar à caixa</button>
-  </div><p class="hint">📦 Junte vários produtos numa caixa e <b>divida o frete</b> — quanto mais você leva (até US$50), mais barato por item. A IA fecha tudo no WhatsApp.</p></div>`;
+  </div><p class="hint">📦 Junte vários produtos numa caixa e <b>divida o frete</b> — quanto mais você leva (até US$50), mais barato por item. Nosso time fecha tudo no WhatsApp.</p></div>`;
   setView('produto');window.scrollTo(0,0);
 }
 function backToLoja(){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}setView('loja');}
@@ -639,7 +639,8 @@ function infoContent(key){
   const P={
     quem:{t:'Quem somos',s:'Somos uma operação de importação com base em Miami, Flórida — compramos produtos originais nos Estados Unidos e entregamos no Brasil, com tudo acompanhado de perto.',h:`
       <p>A <b>${esc(loja)}</b> nasceu para resolver um problema simples: brasileiros querem produtos originais dos Estados Unidos, mas esbarram em preço de dólar escondido, frete imprevisível e medo de não receber. A gente tira esse peso das suas costas.</p>
-      <p>Operamos a partir de <b>Miami, Flórida</b>, com estrutura própria de logística. Cada produto é comprado em loja oficial (Amazon, Walmart e grandes varejistas), <b>com nota fiscal</b>, conferido antes de embarcar e despachado para o Brasil com rastreio do início ao fim.</p>
+      <p>Por trás da ${esc(loja)} existe uma empresa de verdade: a <b>Direct Box USA</b>, nosso centro de preparação e logística em <b>Miami, Flórida</b> — empresa registrada nos Estados Unidos (LLC), com <b>mais de 5 anos</b> preparando e despachando encomendas. <b>Não é um robô que cuida do seu pedido — é um time de pessoas</b>, todos os dias, comprando, conferindo e embalando cada caixa.</p>
+      <p>Cada produto é comprado em loja oficial (Amazon, Walmart e grandes varejistas), <b>com nota fiscal</b>, conferido antes de embarcar e despachado para o Brasil com rastreio do início ao fim.</p>
       <h2>Por que comprar com a gente</h2>
       <ul><li><b>Preço final em reais</b>, com imposto de importação e frete internacional já inclusos — sem surpresa na alfândega.</li>
       <li><b>Produtos 100% originais</b>, comprados com nota em lojas oficiais dos EUA.</li>
