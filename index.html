@@ -143,6 +143,18 @@ img{max-width:100%}
 .rv-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}.rv-h b{font-size:13px;color:var(--navy-ink)}
 .rv .vf{font-size:10.5px;color:#1a7f37;background:#e7f6ec;padding:2px 7px;border-radius:999px;font-weight:600}
 .rv p{font-size:13.5px;color:var(--ink);line-height:1.45;margin:0}
+.guarantee{margin-top:16px;border-radius:var(--radius);background:linear-gradient(135deg,var(--navy) 0%,var(--navy-3) 100%);color:#fff;box-shadow:var(--shadow);padding:22px 22px;display:flex;gap:18px;align-items:flex-start;position:relative;overflow:hidden}
+.guarantee::after{content:"";position:absolute;right:-50px;bottom:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(244,121,32,.22),transparent 70%)}
+.guarantee .g-shield{flex:0 0 auto;width:52px;height:52px;border-radius:14px;background:rgba(244,121,32,.18);border:1px solid rgba(244,121,32,.35);display:flex;align-items:center;justify-content:center}
+.guarantee .g-shield svg{width:28px;height:28px;color:var(--accent)}
+.guarantee h3{font-size:19px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+.guarantee .g-lead{font-size:13.5px;color:#d7e3f0;margin:0 0 12px;max-width:620px}
+.guarantee ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.guarantee li{font-size:13.5px;color:#eaf1f8;padding-left:26px;position:relative;line-height:1.4}
+.guarantee li::before{content:"✓";position:absolute;left:0;top:0;color:#fff;background:var(--accent);width:18px;height:18px;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.guarantee li b{color:#fff}
+.guarantee .g-seal{display:inline-block;margin-top:13px;font-size:11.5px;color:#aac3de;border-top:1px solid rgba(255,255,255,.12);padding-top:11px}
+@media(max-width:620px){.guarantee{flex-direction:column;gap:12px;padding:18px}}
 .rail{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .rail::-webkit-scrollbar{display:none}
 .rail .card{flex:0 0 var(--card-w)}
@@ -380,6 +392,19 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
         <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><div><b>Preço final em R$</b><span>Imposto e frete inclusos</span></div></div>
         <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg></span><div><b>Compra protegida</b><span>Não chegou? Reembolso</span></div></div>
       </div>
+      <section class="guarantee">
+        <div class="g-shield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="g-body">
+          <h3>Tripla Garantia Blindada</h3>
+          <p class="g-lead">Comprar dos EUA assusta — dólar escondido, medo de não receber, golpe. Com a gente, <b>o risco é todo nosso, nunca seu</b>:</p>
+          <ul>
+            <li><b>Chegou ou seu dinheiro de volta.</b> Não chegou no prazo combinado? Você recebe <b>100% de volta</b>.</li>
+            <li><b>Original ou seu dinheiro de volta.</b> Comprado em loja oficial dos EUA, com nota. Veio diferente ou réplica? Reembolso.</li>
+            <li><b>Rastreio do início ao fim.</b> Você acompanha cada etapa pelo WhatsApp — nada de pedido que "some".</li>
+          </ul>
+          <span class="g-seal">🛡️ Operação Direct Box USA · Miami, Flórida · empresa americana (LLC) com +5 anos despachando pro Brasil</span>
+        </div>
+      </section>
       <div id="shelves"><div class="loading">Carregando catálogo…</div></div>
     </div>
   </div>
@@ -561,7 +586,7 @@ function openProduto(id,fromHash){
           <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7"/></svg><div><b>Produto original</b>, comprado em loja oficial dos EUA com nota fiscal.</div></div>
           <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="12" rx="1"/><path d="M16 9h4l3 3v5h-7"/><circle cx="6" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg><div>Entrega em <b>${esc(p.prazo||'10 a 15 dias úteis')}</b>, com código de rastreio.</div></div>
           <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div><b>Sem surpresas na alfândega:</b> imposto e frete internacional já estão no preço.</div></div>
-          <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg><div><b>Compra protegida:</b> não chegou ou veio errado, você recebe o dinheiro de volta.</div></div>
+          <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg><div><b>Tripla Garantia Blindada:</b> não chegou, veio diferente ou com defeito — você recebe <b>100% do seu dinheiro de volta</b>.</div></div>
         </div>
         ${_psz.length?`<div class="field"><label>${esc(vlabel)} <span style="color:var(--accent-d)">— selecione</span></label><div class="sizebtns" id="ppSizes">${_psz.map(s=>`<button aria-pressed="false" onclick="ppSize(this)">${esc(s)}</button>`).join('')}</div></div>`:''}
         <div class="field"><label>Quantidade</label><div class="qtyrow"><button onclick="ppQty(-1)">−</button><input id="ppQty" value="1" readonly><button onclick="ppQty(1)">+</button></div></div>
