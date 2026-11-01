@@ -129,6 +129,12 @@ img{max-width:100%}
 .subchips button:hover{border-color:var(--navy-3)}
 .subchips button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
 .subchips button[aria-pressed="true"] span{color:#aac3de}
+.zoomhint{position:absolute;left:10px;bottom:10px;background:rgba(10,37,64,.78);color:#fff;font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:999px;cursor:zoom-in;pointer-events:auto}
+.zoomov{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:200;display:none;align-items:center;justify-content:center;overflow:auto;padding:10px}
+.zoomov.on{display:flex}
+.zoomov img{max-width:96vw;max-height:92vh;object-fit:contain;transition:transform .2s ease;cursor:zoom-in;will-change:transform}
+.zoomov .zx{position:fixed;top:14px;right:16px;background:rgba(255,255,255,.16);color:#fff;border:0;width:42px;height:42px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;z-index:201}
+.zoomov .zc{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:#dfe8f2;font-size:12px;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:999px;z-index:201}
 .rail{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .rail::-webkit-scrollbar{display:none}
 .rail .card{flex:0 0 var(--card-w)}
@@ -162,7 +168,7 @@ img{max-width:100%}
 .back svg{width:17px;height:17px}
 .pp-grid{display:grid;grid-template-columns:1fr;gap:22px}
 @media(min-width:860px){.pp-grid{grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:34px;align-items:start}}
-.gal-main{background:#fff;border:1px solid var(--line);border-radius:var(--radius);height:360px;display:flex;align-items:center;justify-content:center;padding:22px;box-shadow:var(--shadow)}
+.gal-main{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);height:360px;display:flex;align-items:center;justify-content:center;padding:22px;box-shadow:var(--shadow)}
 @media(min-width:860px){.gal-main{height:430px;position:sticky;top:94px}}
 .gal-main img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:multiply}
 .gal-main video{width:100%;height:100%;object-fit:contain}
@@ -411,6 +417,7 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
   <div class="cart-foot" id="cartFoot"></div>
 </aside>
 <div class="toast" id="toast"></div>
+<div class="zoomov" id="zoomov" onclick="closeZoom()"><button class="zx" onclick="closeZoom()" aria-label="Fechar">✕</button><img id="zoomImg" onclick="zoomTap(event)" alt=""><span class="zc">Toque na imagem para dar zoom · toque fora para fechar</span></div>
 
 <script>
 const SUPABASE_URL="https://qfxemysisbyqevxfihvd.supabase.co";
@@ -420,15 +427,20 @@ const BRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const num=s=>{const n=parseFloat(String(s==null?'':s).replace(',','.'));return isNaN(n)?0:n;};
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+let _zed=false;
+function openZoom(src){if(!src)return;const o=document.getElementById('zoomov'),im=document.getElementById('zoomImg');im.style.transform='';_zed=false;im.src=src;o.classList.add('on');document.body.style.overflow='hidden';}
+function closeZoom(){document.getElementById('zoomov').classList.remove('on');document.body.style.overflow='';}
+function zoomTap(e){e.stopPropagation();const im=document.getElementById('zoomImg');if(!_zed){const r=im.getBoundingClientRect();const x=Math.max(0,Math.min(100,((e.clientX-r.left)/r.width)*100)),y=Math.max(0,Math.min(100,((e.clientY-r.top)/r.height)*100));im.style.transformOrigin=x+'% '+y+'%';im.style.transform='scale(2.6)';im.style.cursor='zoom-out';_zed=true;}else{im.style.transform='';im.style.cursor='zoom-in';_zed=false;}}
 function ph(nm){return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='#f4f6f9'/><text x='150' y='150' font-family='sans-serif' font-size='110' fill='#c6ccd4' text-anchor='middle' dominant-baseline='central'>${(nm||'?').trim()[0]||'?'}</text></svg>`);}
 window.imgErr=function(el,nm){el.onerror=null;el.src=ph(nm);};
-const CAT_ORDER=['Suplementos','Eletrônicos','Beleza','Bonés','Mochilas','Disney','Bebê','Lingerie','Perfumes','Colecionáveis','Gaming','Brinquedos','Beleza Premium','Cozinha','Papelaria','Esportes','Pet','Alimentos','Casa','Saúde'];
+const CAT_ORDER=['Suplementos','Eletrônicos','Beleza','Bonés','Mochilas','Disney','Bebê','Lingerie','Meias','Perfumes','Colecionáveis','Gaming','Brinquedos','Beleza Premium','Cozinha','Papelaria','Esportes','Pet','Alimentos','Casa','Saúde'];
 // Ordem preferida das subcategorias (o que vende mais aparece primeiro). Sem entrada = ordena por quantidade.
 const SUBORDER={'Eletrônicos':['Capas & Acessórios','Carregadores & Power Banks','Áudio & Fones','Casa Inteligente','Alexa & Echo','Câmeras & Segurança']};
-// Categorias de vestuário/íntimo: tamanho obrigatório P/M/G, confirmado no site antes do WhatsApp
-const APPAREL=['Lingerie'];
-function prodSizes(p){return (p.sizes&&p.sizes.length)?p.sizes:(APPAREL.includes(p.categoria)?['P','M','G']:[]);}
-function sizeLabel(p){return (APPAREL.includes(p.categoria)||/tamanho/i.test(p.variacao_label||''))?'Tamanho':(p.variacao_label||'Opção');}
+// Categorias de vestuário/íntimo: tamanho obrigatório, confirmado no site antes do WhatsApp
+const SIZEMAP={'Lingerie':['P','M','G'],'Meias':['34-38','39-43','44-48']};
+const APPAREL=Object.keys(SIZEMAP);
+function prodSizes(p){return (p.sizes&&p.sizes.length)?p.sizes:(SIZEMAP[p.categoria]||[]);}
+function sizeLabel(p){return p.categoria==='Meias'?'Numeração (BR)':((APPAREL.includes(p.categoria)||/tamanho/i.test(p.variacao_label||''))?'Tamanho':(p.variacao_label||'Opção'));}
 let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', filtroSub='Todos', termoBusca='';
 
 async function loadAll(){
@@ -520,7 +532,7 @@ function openProduto(id,fromHash){
   const isVid=p.video_url&&/\.(mp4|webm|mov)$/i.test(p.video_url);
   curFotos=(p.photos&&p.photos.length)?p.photos:[img(p)];
   const d=descPct(p);const vlabel=sizeLabel(p);const _psz=prodSizes(p);
-  const media=isVid?`<video src="${esc(p.video_url)}" controls playsinline></video>`:`<img id="ppImg" src="${curFotos[0]}" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')" alt="${esc(p.nome)}">`;
+  const media=isVid?`<video src="${esc(p.video_url)}" controls playsinline></video>`:`<img id="ppImg" src="${curFotos[0]}" style="cursor:zoom-in" onclick="openZoom(this.src)" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')" alt="${esc(p.nome)}"><span class="zoomhint" onclick="openZoom(document.getElementById('ppImg').src)">🔍 Toque para ampliar</span>`;
   const thumbs=(curFotos.length>1&&!isVid)?`<div class="gal-thumbs" id="ppThumbs">${curFotos.map((u,i)=>`<button class="gt${i===0?' on':''}" onclick="ppFoto('${u}',this)"><img src="${u}" onerror="imgErr(this,'x')" alt=""></button>`).join('')}</div>`:'';
   document.getElementById('produto').innerHTML=`<div class="pp">
     <div class="crumb"><button class="back" onclick="backToLoja()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg> Voltar</button><span>·</span><a onclick="pickCat('${(p.categoria||'Todos').replace(/'/g,"\\'")}')">${esc(p.categoria||'Produtos')}</a></div>
