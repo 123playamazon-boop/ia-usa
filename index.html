@@ -307,6 +307,10 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
 .panel-link{position:fixed;bottom:14px;right:14px;z-index:40;background:var(--navy);color:#fff;border:0;font-size:11px;font-weight:700;padding:9px 13px;border-radius:999px;box-shadow:var(--shadow);opacity:.75}
 /* ===== CARRINHO / CAIXA ===== */
 .cartfab{position:fixed;right:16px;bottom:16px;z-index:65;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:13px 18px;font-weight:800;font-size:14px;box-shadow:var(--shadow-lg);display:none;align-items:center;gap:9px;cursor:pointer}
+.wafab{position:fixed;left:16px;bottom:16px;z-index:65;background:#25D366;color:#fff;border:0;border-radius:999px;padding:11px 16px 11px 13px;font-weight:800;font-size:14px;box-shadow:0 8px 24px rgba(37,211,102,.5);display:flex;align-items:center;gap:9px;cursor:pointer}
+.wafab svg{width:24px;height:24px;fill:#fff}
+.wafab:hover{background:#1fbd5a}
+@media(max-width:620px){.wafab .wl{display:none}.wafab{padding:12px}}
 .cartfab.on{display:inline-flex}
 .cartfab svg{width:20px;height:20px}
 .cartfab .cnt{background:#fff;color:var(--accent-d);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 6px}
@@ -429,6 +433,7 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
   <div class="pcard"><h3>Produtos no catálogo</h3><div class="plist" id="plist"></div></div>
 </main>
 
+<button class="wafab" onclick="waGeral()" aria-label="Falar no WhatsApp"><svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg><span class="wl">Tirar dúvida</span></button>
 <button class="cartfab" id="cartFab" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Meu pedido <span class="cnt" id="cartCnt">0</span></button>
 <div class="cart-bg" id="cartBg" onclick="closeCart()"></div>
 <aside class="cart" id="cartDrawer">
