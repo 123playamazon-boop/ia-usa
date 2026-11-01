@@ -93,8 +93,21 @@ img{max-width:100%}
 }
 .content{flex:1;min-width:0;padding-bottom:50px}
 
+/* ===== HERO ===== */
+.hero{margin-top:16px;border-radius:var(--radius);padding:30px 24px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-3) 100%);color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(244,121,32,.26),transparent 70%)}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:6px 12px;border-radius:999px;color:#eaf1f8}
+.hero-badge svg{width:15px;height:15px;color:var(--accent)}
+.hero h1{font-size:27px;line-height:1.18;margin:14px 0 0;letter-spacing:-.025em;font-weight:700}
+.hero h1 b{color:var(--accent);font-weight:800}
+@media(max-width:620px){.hero{padding:24px 18px}.hero h1{font-size:22px}}
+.hero p{font-size:14px;color:#c6d6e6;margin:11px 0 0;max-width:56ch;line-height:1.6;position:relative}
+.hero-cta{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;position:relative}
+.hero-cta button{border:0;font-weight:800;font-size:14px;padding:12px 20px;border-radius:11px;cursor:pointer}
+.hero-cta .hp{background:var(--accent);color:#fff}.hero-cta .hp:hover{background:var(--accent-d)}
+.hero-cta .hs{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
 /* ===== BANNER + TRUST ===== */
-.banner{margin-top:16px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:block;cursor:pointer;background:var(--navy);line-height:0}
+.banner{margin-top:14px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:block;cursor:pointer;background:var(--navy);line-height:0}
 .banner img{width:100%;height:auto;display:block}
 @media(max-width:620px){.banner{margin-top:12px}}
 .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
@@ -129,6 +142,10 @@ img{max-width:100%}
 .buy{margin-top:11px;border:0;background:var(--accent);color:#fff;font-weight:800;font-size:var(--fs-btn);padding:11px;border-radius:10px;width:100%;transition:background .15s}
 .buy:hover{background:var(--accent-d)}
 .empty,.loading{text-align:center;color:var(--muted);padding:48px 16px}
+.askai{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:16px;background:linear-gradient(135deg,var(--navy),var(--navy-3));color:#fff;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.askai b{display:block;font-size:14.5px}.askai span{display:block;font-size:12.5px;color:#c6d6e6;margin-top:3px}
+.askai button{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;border:0;background:var(--wa);color:#fff;font-weight:800;font-size:14px;padding:12px 18px;border-radius:11px}
+.askai button svg{width:18px;height:18px}
 
 /* ===== PRODUCT PAGE ===== */
 .pp{max-width:1080px;margin:0 auto;padding:0 max(14px,env(safe-area-inset-left,0px)) 120px}
@@ -288,6 +305,12 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
     <aside class="side"><div class="side-in"><h3>Departamentos</h3><div id="sideCats"></div>
       <div class="help"><b>Precisa de ajuda?</b><span>Fale com a gente no WhatsApp, atendimento humano.</span></div></div></aside>
     <div class="content">
+      <section class="hero">
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 015 5v1a5 5 0 01-10 0V7a5 5 0 015-5z"/><path d="M5 21v-1a7 7 0 0114 0v1"/></svg> Assistente de compras com IA</span>
+        <h1>Você escolhe o produto.<br><b>Nossa IA cuida da importação.</b></h1>
+        <p>Encontre produtos originais dos Estados Unidos e compre pelo WhatsApp, com uma assistente inteligente que acompanha você de ponta a ponta — do preço ao rastreio.</p>
+        <div class="hero-cta"><button class="hp" onclick="document.getElementById('shelves').scrollIntoView({behavior:'smooth'})">Ver produtos</button><button class="hs" onclick="waGeral()">Falar com a IA →</button></div>
+      </section>
       <a class="banner" id="bannerBox" onclick="document.getElementById('shelves').scrollIntoView({behavior:'smooth'})">
         <img src="https://123playamazon-boop.github.io/ia-usa/banner.jpg" alt="Importe dos EUA com segurança" loading="eager" onerror="this.closest('.banner').style.display='none'">
       </a>
@@ -356,7 +379,7 @@ async function loadAll(){
     const {data,error}=await db.from('produtos').select('*, variacoes(tamanho,ordem), fotos(url,ordem)').eq('ativo',true).order('ordem');
     if(error) throw error;
     PRODUTOS=(data||[]).map(p=>({...p,sizes:(p.variacoes||[]).sort((a,b)=>a.ordem-b.ordem).map(v=>v.tamanho),photos:(p.fotos||[]).sort((a,b)=>a.ordem-b.ordem).map(f=>f.url)}));
-    applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); checkAdmin(); logEvento('visita');
+    applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); route(); logEvento('visita');
   }catch(e){ document.getElementById('shelves').innerHTML=`<div class="empty">Erro ao conectar: ${esc(e.message||e)}</div>`; }
 }
 function cats(){ const s=new Set(PRODUTOS.map(p=>p.categoria).filter(Boolean)); return CAT_ORDER.filter(c=>s.has(c)).concat([...s].filter(c=>!CAT_ORDER.includes(c))); }
@@ -371,9 +394,17 @@ function waGeral(){const n=waNum();if(!n){toast('WhatsApp não configurado.');re
 const VIEWS=['loja','produto','info','painel'];
 function setView(v){VIEWS.forEach(x=>document.getElementById(x).hidden=x!==v);if(v!=='produto')window.scrollTo(0,0);}
 function goHome(){filtroCat='Todos';termoBusca='';document.getElementById('busca').value='';if(location.hash)history.replaceState(null,'',location.pathname+location.search);setView('loja');renderCats();renderShelves();window.scrollTo({top:0,behavior:'smooth'});}
-/* Painel de administração: acesso só por link secreto (…/#admin), nunca visível ao cliente */
-function checkAdmin(){const h=(location.hash||'').toLowerCase();if(h==='#admin'||h==='#painel'){setView('painel');}else if(!document.getElementById('painel').hidden){setView('loja');}}
-window.addEventListener('hashchange',checkAdmin);
+/* Roteador por hash: #p=<id> abre o produto (link compartilhável/WhatsApp), #admin abre o painel secreto */
+function route(){
+  const h=location.hash||'';
+  const hl=h.toLowerCase();
+  if(hl==='#admin'||hl==='#painel'){setView('painel');return;}
+  const mp=h.match(/^#p=(.+)$/);
+  if(mp){const id=decodeURIComponent(mp[1]);if(PRODUTOS.find(x=>x.id===id)){openProduto(id,true);return;}}
+  // sem hash válido: volta pra loja se estava em produto/painel
+  if(!document.getElementById('produto').hidden||!document.getElementById('painel').hidden)setView('loja');
+}
+window.addEventListener('hashchange',route);
 
 /* ===== MENU ===== */
 function openMenu(){const cs=cats();document.getElementById('drawerCats').innerHTML='<h4>Departamentos</h4>'+['Todos',...cs].map(c=>`<a onclick="closeMenu();pickCat('${c.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>${c==='Todos'?'Todos os produtos':c}${c!=='Todos'?`<span class="q">${PRODUTOS.filter(p=>p.categoria===c).length}</span>`:''}</a>`).join('');document.getElementById('drawerBg').classList.add('on');document.getElementById('drawer').classList.add('on');document.body.style.overflow='hidden';}
@@ -402,19 +433,22 @@ function cardHtml(p){
 function renderShelves(){
   const el=document.getElementById('shelves');
   if(termoBusca){const list=PRODUTOS.filter(p=>(p.nome||'').toLowerCase().includes(termoBusca)||(p.categoria||'').toLowerCase().includes(termoBusca));
-    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>Resultados para "${esc(termoBusca)}"</h2></div><div class="grid">${list.length?list.map(cardHtml).join(''):'<div class="empty">Nada encontrado.</div>'}</div></section>`;return;}
+    const askAI=`<div class="askai"><div><b>Procura algo específico dos EUA?</b><span>Mesmo que não esteja no site, nossa IA acha e importa pra você.</span></div><button onclick="searchAI()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg> Pedir pra IA</button></div>`;
+    el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>Resultados para "${esc(termoBusca)}"</h2></div><div class="grid">${list.length?list.map(cardHtml).join(''):'<div class="empty">Nenhum produto no site com esse nome — mas a IA pode importar pra você 👇</div>'}</div>${askAI}</section>`;return;}
   if(filtroCat!=='Todos'){const prods=PRODUTOS.filter(p=>p.categoria===filtroCat);
     el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>${esc(filtroCat)}</h2><a onclick="pickCat('Todos')">‹ Início</a></div><div class="grid">${prods.map(cardHtml).join('')||'<div class="empty">Nenhum produto.</div>'}</div></section>`;return;}
   el.innerHTML=cats().map(c=>{const prods=PRODUTOS.filter(p=>p.categoria===c);if(!prods.length)return '';
     return `<section class="shelf"><div class="shelf-h"><h2>${esc(c)}</h2>${prods.length>2?`<a onclick="pickCat('${c.replace(/'/g,"\\'")}')">Ver todos ›</a>`:''}</div><div class="rail">${prods.map(cardHtml).join('')}</div></section>`;}).join('')||'<div class="empty">Nenhum produto ativo.</div>';
 }
 function onBusca(){termoBusca=(document.getElementById('busca').value||'').toLowerCase().trim();setView('loja');renderShelves();}
+function searchAI(){const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}const t=(document.getElementById('busca').value||'').trim();const msg=t?`Olá! Quero importar dos EUA: *${t}*. Vocês conseguem achar e me passar o preço final em reais? 🙂`:'Olá! Quero importar um produto dos EUA pela IA USA. Pode me ajudar a achar? 🙂';window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank');}
 
 /* ===== PRODUCT PAGE ===== */
 let cur=null,curSize=null,curQty=1,curFotos=[];
 function brandOf(p){const b=(p.nome||'').trim().split(/\s+/)[0];return b&&b.length>1?b:(p.categoria||'Importado');}
-function openProduto(id){
+function openProduto(id,fromHash){
   const p=PRODUTOS.find(x=>x.id===id);if(!p)return;
+  if(!fromHash){try{history.replaceState(null,'','#p='+id);}catch(e){}}
   cur=p;curSize=p.sizes.length?null:'único';curQty=1;logEvento('view',p.id);
   const isVid=p.video_url&&/\.(mp4|webm|mov)$/i.test(p.video_url);
   curFotos=(p.photos&&p.photos.length)?p.photos:[img(p)];
@@ -453,11 +487,11 @@ function openProduto(id){
   </div>
   <div class="pp-cta"><div class="in">
     <div class="tot"><div class="lb">Total</div><div class="vl" id="ppTot">${BRL.format(p.preco)}</div></div>
-    <button class="cta" id="ppCta" onclick="goWhats(event)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.82 9.82 0 001.763 5.62l-.998 3.648 3.733-.967z"/></svg> Pedir no WhatsApp</button>
-  </div><p class="hint">Você confirma o endereço e recebe o link de pagamento. Atendimento humano.</p></div>`;
+    <button class="cta" id="ppCta" onclick="goWhats(event,'página do produto')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.82 9.82 0 001.763 5.62l-.998 3.648 3.733-.967z"/></svg> Quero importar com a IA</button>
+  </div><p class="hint">🤖 Uma assistente de compras com IA calcula o total, tira suas dúvidas e cuida da importação de ponta a ponta.</p></div>`;
   setView('produto');window.scrollTo(0,0);
 }
-function backToLoja(){setView('loja');}
+function backToLoja(){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}setView('loja');}
 function ppFoto(u,b){const im=document.getElementById('ppImg');if(im)im.src=u;document.querySelectorAll('#ppThumbs .gt').forEach(x=>x.classList.toggle('on',x===b));}
 function ppSize(b){curSize=b.textContent;document.querySelectorAll('#ppSizes button').forEach(x=>x.setAttribute('aria-pressed',x===b));}
 function ppQty(d){curQty=Math.max(1,curQty+d);document.getElementById('ppQty').value=curQty;document.getElementById('ppTot').textContent=BRL.format(cur.preco*curQty);}
@@ -465,17 +499,26 @@ function custoBrl(p){ if(!p.preco_usd) return p.custo||0;
   const d=num(CONFIG.dolar)||5.4,fk=num(CONFIG.frete_kg)||50,ic=(num(CONFIG.icms_percent)||17)/100;
   const prod=p.preco_usd*d,frete=(p.peso_kg||0.3)*fk,base=p.preco_usd+frete/d;
   let ii=base<=50?0:(0.6*(prod+frete)-30*d);if(ii<0)ii=0;return (prod+frete+ii)/(1-ic);}
-function goWhats(e){
+function prodLink(p){return location.origin+location.pathname+'#p='+p.id;}
+function goWhats(e,origem){
   e.preventDefault();
   if(cur.sizes.length&&!curSize){toast('Escolha uma opção primeiro.');return false;}
   const total=cur.preco*curQty;
-  const name=(document.getElementById('ppName').value||'').trim(), city=(document.getElementById('ppCity').value||'').trim();
+  const name=(document.getElementById('ppName')?document.getElementById('ppName').value:'').trim(), city=(document.getElementById('ppCity')?document.getElementById('ppCity').value:'').trim();
   const vlabel=cur.variacao_label||'Opção';
-  let m=`Olá! Quero importar este produto 👇\n\n*${cur.nome}*\n`;
-  if(curSize&&curSize!=='único')m+=`*${vlabel}:* ${curSize}\n`;
-  m+=`*Qtd:* ${curQty}\n*Total:* ${BRL.format(total)} (frete e imposto inclusos)\n*Entrega:* ${cur.prazo||'10 a 15 dias'}\n`;
-  if(name||city){m+=`\n`;if(name)m+=`*Nome:* ${name}\n`;if(city)m+=`*Cidade:* ${city}\n`;}
-  m+=`\nPode confirmar e me passar o endereço e a forma de pagamento? 🙏`;
+  // Mensagem com contexto completo: a IA já sabe de qual produto o cliente fala
+  let m=`Olá! Quero importar este produto pela IA USA 👇\n\n*${cur.nome}*\n`;
+  m+=`• Marca: ${brandOf(cur)}\n`;
+  if(cur.asin)m+=`• Ref.: ${cur.asin}\n`;
+  if(curSize&&curSize!=='único')m+=`• ${vlabel}: ${curSize}\n`;
+  m+=`• Qtd: ${curQty}\n`;
+  m+=`• Preço no site: ${BRL.format(cur.preco)}${curQty>1?' (un.)':''}\n`;
+  m+=`• Total: ${BRL.format(total)} — frete e imposto inclusos\n`;
+  m+=`• Entrega: ${cur.prazo||'10 a 15 dias úteis'}\n`;
+  m+=`• Página: ${prodLink(cur)}\n`;
+  if(name||city){m+=`\n`;if(name)m+=`• Nome: ${name}\n`;if(city)m+=`• Cidade: ${city}\n`;}
+  m+=`\n_(origem: ${origem||'página do produto'})_\n`;
+  m+=`\nPode me ajudar a finalizar essa importação? 🙏`;
   const n=waNum();
   if(!n){toast('WhatsApp não configurado.');return false;}
   const cb=custoBrl(cur), lucro=Math.round((cur.preco-cb)*curQty*100)/100;
