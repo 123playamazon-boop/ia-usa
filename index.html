@@ -577,7 +577,7 @@ function openProduto(id,fromHash){
         </div>
         ${_psz.length?`<div class="field"><label>${esc(vlabel)} <span style="color:var(--accent-d)">— selecione</span></label><div class="sizebtns" id="ppSizes">${_psz.map(s=>`<button aria-pressed="false" onclick="ppSize(this)">${esc(s)}</button>`).join('')}</div></div>`:''}
         <div class="field"><label>Quantidade</label><div class="qtyrow"><button onclick="ppQty(-1)">−</button><input id="ppQty" value="1" readonly><button onclick="ppQty(1)">+</button></div></div>
-        <div class="field"><div class="twoinput"><div><label>Seu nome</label><input class="inp" id="ppName" placeholder="Opcional"></div><div><label>Cidade</label><input class="inp" id="ppCity" placeholder="Opcional"></div></div></div>
+        
         ${p.descricao?`<div class="field"><label>Sobre o produto</label><div class="pp-desc">${esc(p.descricao)}</div></div>`:''}
         ${p.reviews&&p.reviews.length?`<div class="field"><label>Avaliações de quem comprou nos EUA${p.rating?` · ${(+p.rating).toFixed(1)} de 5`:''}</label><div class="reviews">${p.reviews.map(rv=>`<div class="rv"><div class="rv-h">${stars(rv.nota||p.rating)}<b>${esc(rv.autor||'Comprador')}</b><span class="vf">✓ Avaliação verificada (EUA)</span></div><p>"${esc(rv.texto)}"</p></div>`).join('')}</div></div>`:''}
         <div class="acc">
@@ -609,7 +609,7 @@ function goWhats(e,origem){
   e.preventDefault();
   if(cur.sizes.length&&!curSize){toast('Escolha uma opção primeiro.');return false;}
   const total=cur.preco*curQty;
-  const name=(document.getElementById('ppName')?document.getElementById('ppName').value:'').trim(), city=(document.getElementById('ppCity')?document.getElementById('ppCity').value:'').trim();
+  const name='', city='';
   const vlabel=cur.variacao_label||'Opção';
   // Mensagem com contexto completo: a IA já sabe de qual produto o cliente fala
   let m=`Olá! Quero importar este produto pela IA USA 👇\n\n*${cur.nome}*\n`;
