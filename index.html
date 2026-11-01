@@ -403,10 +403,10 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
   <div class="pcard"><h3>Produtos no catálogo</h3><div class="plist" id="plist"></div></div>
 </main>
 
-<button class="cartfab" id="cartFab" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Minha caixa <span class="cnt" id="cartCnt">0</span></button>
+<button class="cartfab" id="cartFab" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Meu pedido <span class="cnt" id="cartCnt">0</span></button>
 <div class="cart-bg" id="cartBg" onclick="closeCart()"></div>
 <aside class="cart" id="cartDrawer">
-  <div class="cart-top"><b>📦 Minha caixa de importação</b><button onclick="closeCart()" aria-label="Fechar">✕</button></div>
+  <div class="cart-top"><b>🛒 Meu pedido de importação</b><button onclick="closeCart()" aria-label="Fechar">✕</button></div>
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-foot" id="cartFoot"></div>
 </aside>
@@ -425,6 +425,10 @@ window.imgErr=function(el,nm){el.onerror=null;el.src=ph(nm);};
 const CAT_ORDER=['Suplementos','Eletrônicos','Beleza','Bonés','Mochilas','Disney','Bebê','Lingerie','Perfumes','Colecionáveis','Gaming','Brinquedos','Beleza Premium','Cozinha','Papelaria','Esportes','Pet','Alimentos','Casa','Saúde'];
 // Ordem preferida das subcategorias (o que vende mais aparece primeiro). Sem entrada = ordena por quantidade.
 const SUBORDER={'Eletrônicos':['Capas & Acessórios','Carregadores & Power Banks','Áudio & Fones','Casa Inteligente','Alexa & Echo','Câmeras & Segurança']};
+// Categorias de vestuário/íntimo: tamanho obrigatório P/M/G, confirmado no site antes do WhatsApp
+const APPAREL=['Lingerie'];
+function prodSizes(p){return (p.sizes&&p.sizes.length)?p.sizes:(APPAREL.includes(p.categoria)?['P','M','G']:[]);}
+function sizeLabel(p){return (APPAREL.includes(p.categoria)||/tamanho/i.test(p.variacao_label||''))?'Tamanho':(p.variacao_label||'Opção');}
 let PRODUTOS=[], CONFIG={nome_loja:'IA USA',whatsapp:'',email:'',dolar:5.4,frete_kg:50,icms_percent:17,margem_percent:40}, filtroCat='Todos', filtroSub='Todos', termoBusca='';
 
 async function loadAll(){
@@ -483,7 +487,7 @@ function cardHtml(p){
       <div class="pr"><span class="now">${BRL.format(p.preco)}</span>${p.preco_de&&p.preco_de>p.preco?`<span class="old">${BRL.format(p.preco_de)}</span>`:''}</div>
       <div class="save">${d?`Economize ${BRL.format(p.preco_de-p.preco)}`:'&nbsp;'}</div>
       <div class="shipl">Entrega ${esc(p.prazo||'10–15 dias')} · <b>frete incluso</b></div>
-      <button class="buy" onclick="event.stopPropagation();addToCart('${p.id}')">+ Adicionar à caixa</button>
+      <button class="buy" onclick="event.stopPropagation();${APPAREL.includes(p.categoria)?`openProduto('${p.id}')`:`addToCart('${p.id}')`}">${APPAREL.includes(p.categoria)?'Escolher tamanho':'+ Adicionar ao pedido'}</button>
     </div></article>`;
 }
 function renderShelves(){
@@ -512,10 +516,10 @@ function brandOf(p){const b=(p.nome||'').trim().split(/\s+/)[0];return b&&b.leng
 function openProduto(id,fromHash){
   const p=PRODUTOS.find(x=>x.id===id);if(!p)return;
   if(!fromHash){try{history.replaceState(null,'','#p='+id);}catch(e){}}
-  cur=p;curSize=p.sizes.length?null:'único';curQty=1;logEvento('view',p.id);
+  cur=p;curSize=prodSizes(p).length?null:'único';curQty=1;logEvento('view',p.id);
   const isVid=p.video_url&&/\.(mp4|webm|mov)$/i.test(p.video_url);
   curFotos=(p.photos&&p.photos.length)?p.photos:[img(p)];
-  const d=descPct(p);const vlabel=p.variacao_label||'Opção';
+  const d=descPct(p);const vlabel=sizeLabel(p);const _psz=prodSizes(p);
   const media=isVid?`<video src="${esc(p.video_url)}" controls playsinline></video>`:`<img id="ppImg" src="${curFotos[0]}" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')" alt="${esc(p.nome)}">`;
   const thumbs=(curFotos.length>1&&!isVid)?`<div class="gal-thumbs" id="ppThumbs">${curFotos.map((u,i)=>`<button class="gt${i===0?' on':''}" onclick="ppFoto('${u}',this)"><img src="${u}" onerror="imgErr(this,'x')" alt=""></button>`).join('')}</div>`:'';
   document.getElementById('produto').innerHTML=`<div class="pp">
@@ -535,7 +539,7 @@ function openProduto(id,fromHash){
           <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div><b>Sem surpresas na alfândega:</b> imposto e frete internacional já estão no preço.</div></div>
           <div class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg><div><b>Compra protegida:</b> não chegou ou veio errado, você recebe o dinheiro de volta.</div></div>
         </div>
-        ${p.sizes.length?`<div class="field"><label>${esc(vlabel)}</label><div class="sizebtns" id="ppSizes">${p.sizes.map(s=>`<button aria-pressed="false" onclick="ppSize(this)">${esc(s)}</button>`).join('')}</div></div>`:''}
+        ${_psz.length?`<div class="field"><label>${esc(vlabel)} <span style="color:var(--accent-d)">— selecione</span></label><div class="sizebtns" id="ppSizes">${_psz.map(s=>`<button aria-pressed="false" onclick="ppSize(this)">${esc(s)}</button>`).join('')}</div></div>`:''}
         <div class="field"><label>Quantidade</label><div class="qtyrow"><button onclick="ppQty(-1)">−</button><input id="ppQty" value="1" readonly><button onclick="ppQty(1)">+</button></div></div>
         <div class="field"><div class="twoinput"><div><label>Seu nome</label><input class="inp" id="ppName" placeholder="Opcional"></div><div><label>Cidade</label><input class="inp" id="ppCity" placeholder="Opcional"></div></div></div>
         ${p.descricao?`<div class="field"><label>Sobre o produto</label><div class="pp-desc">${esc(p.descricao)}</div></div>`:''}
@@ -550,14 +554,15 @@ function openProduto(id,fromHash){
   </div>
   <div class="pp-cta"><div class="in">
     <div class="tot"><div class="lb">Total</div><div class="vl" id="ppTot">${BRL.format(p.preco)}</div></div>
-    <button class="cta" id="ppCta" style="background:var(--accent)" onclick="addToCart(cur.id,curQty)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Adicionar à caixa</button>
-  </div><p class="hint">📦 Junte vários produtos numa caixa e <b>divida o frete</b> — quanto mais você leva (até US$50), mais barato por item. Nosso time fecha tudo no WhatsApp.</p></div>`;
+    <button class="cta" id="ppCta" style="background:var(--accent)" onclick="addProd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Adicionar ao pedido</button>
+  </div><p class="hint">🛒 Junte vários produtos no mesmo pedido e <b>divida o frete</b> — quanto mais você leva (até US$50), mais barato por item.</p></div>`;
   setView('produto');window.scrollTo(0,0);
 }
 function backToLoja(){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}setView('loja');}
 function ppFoto(u,b){const im=document.getElementById('ppImg');if(im)im.src=u;document.querySelectorAll('#ppThumbs .gt').forEach(x=>x.classList.toggle('on',x===b));}
 function ppSize(b){curSize=b.textContent;document.querySelectorAll('#ppSizes button').forEach(x=>x.setAttribute('aria-pressed',x===b));}
 function ppQty(d){curQty=Math.max(1,curQty+d);document.getElementById('ppQty').value=curQty;document.getElementById('ppTot').textContent=BRL.format(cur.preco*curQty);}
+function addProd(){const sz=prodSizes(cur);if(sz.length&&(!curSize||curSize==='único')){toast('Selecione o tamanho primeiro.');const el=document.getElementById('ppSizes');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});return;}addToCart(cur.id,curQty,(curSize&&curSize!=='único')?curSize:null);}
 function custoBrl(p){ if(!p.preco_usd) return p.custo||0;
   const d=num(CONFIG.dolar)||5.4,fk=num(CONFIG.frete_kg)||50,ic=(num(CONFIG.icms_percent)||17)/100;
   const prod=p.preco_usd*d,frete=(p.peso_kg||0.3)*fk,base=p.preco_usd+frete/d;
@@ -594,7 +599,7 @@ function logEvento(tipo,pid){try{db.from('eventos').insert({tipo,produto_id:pid|
 let CART=[];
 function loadCart(){try{CART=JSON.parse(localStorage.getItem('iausa_cart')||'[]')||[];}catch(e){CART=[];}}
 function saveCart(){try{localStorage.setItem('iausa_cart',JSON.stringify(CART));}catch(e){}}
-function cartItems(){return CART.map(c=>({qty:c.qty,p:PRODUTOS.find(x=>x.id===c.id)})).filter(x=>x.p&&x.qty>0);}
+function cartItems(){return CART.map(c=>({qty:c.qty,size:c.size||null,p:PRODUTOS.find(x=>x.id===c.id)})).filter(x=>x.p&&x.qty>0);}
 function cartQty(){return cartItems().reduce((s,x)=>s+x.qty,0);}
 function cartUsd(){return cartItems().reduce((s,x)=>s+(+x.p.preco_usd||0)*x.qty,0);}
 function cartProd(){return cartItems().reduce((s,x)=>s+(+x.p.preco||0)*x.qty,0);}
@@ -604,32 +609,33 @@ function cartBoxes(){return Math.max(1,Math.ceil((cartUsd()/limiteUsd())||0));}
 function cartFrete(){return freteBox()*cartBoxes();}
 function cartTotal(){return cartProd()+cartFrete();}
 function updateCartBtn(){const n=cartQty();const c=document.getElementById('cartCnt');if(c)c.textContent=n;const fab=document.getElementById('cartFab');if(fab)fab.classList.toggle('on',n>0);}
-function addToCart(id,qty){qty=qty||1;const e=CART.find(c=>c.id===id);if(e)e.qty+=qty;else CART.push({id,qty});saveCart();updateCartBtn();toast('Adicionado à caixa 📦');openCart();}
-function setQtyCart(id,q){const e=CART.find(c=>c.id===id);if(e){e.qty=Math.max(0,q);if(e.qty<=0)CART=CART.filter(c=>c.id!==id);}saveCart();renderCart();updateCartBtn();}
+function addToCart(id,qty,size){qty=qty||1;size=size||null;const e=CART.find(c=>c.id===id&&(c.size||null)===size);if(e)e.qty+=qty;else CART.push({id,qty,size});saveCart();updateCartBtn();toast('Adicionado ao pedido 🛒');openCart();}
+function setQtyCart(id,size,q){size=size||null;const e=CART.find(c=>c.id===id&&(c.size||null)===size);if(e){e.qty=Math.max(0,q);if(e.qty<=0)CART=CART.filter(c=>!(c.id===id&&(c.size||null)===size));}saveCart();renderCart();updateCartBtn();}
 function openCart(){renderCart();document.getElementById('cartBg').classList.add('on');document.getElementById('cartDrawer').classList.add('on');document.body.style.overflow='hidden';}
 function closeCart(){document.getElementById('cartBg').classList.remove('on');document.getElementById('cartDrawer').classList.remove('on');document.body.style.overflow='';}
 function renderCart(){
   const items=cartItems();const body=document.getElementById('cartBody');const foot=document.getElementById('cartFoot');
-  if(!items.length){body.innerHTML='<div class="cart-empty">Sua caixa está vazia.<br>Junte produtos e <b>divida o frete</b> entre eles. 📦</div>';foot.innerHTML='';return;}
+  if(!items.length){body.innerHTML='<div class="cart-empty">Seu pedido está vazio.<br>Junte produtos e <b>divida o frete</b> entre eles. 🛒</div>';foot.innerHTML='';return;}
   const usd=cartUsd(),lim=limiteUsd(),boxes=cartBoxes(),frete=cartFrete(),prod=cartProd(),qty=cartQty(),total=cartTotal();
   const pct=Math.min(100,usd/(lim*boxes)*100),over=usd>lim;
-  let h=items.map(x=>`<div class="ci"><img src="${img(x.p)}" onerror="imgErr(this,'x')" alt=""><div class="i"><div class="nm">${esc(x.p.nome)}</div><div class="pr">${BRL.format(x.p.preco)}</div><div class="q"><button onclick="setQtyCart('${x.p.id}',${x.qty-1})">−</button><span>${x.qty}</span><button onclick="setQtyCart('${x.p.id}',${x.qty+1})">+</button></div></div><button class="rm" onclick="setQtyCart('${x.p.id}',0)">remover</button></div>`).join('');
-  h+=`<div class="capbar"><div class="lab"><span>${boxes>1?boxes+' caixas':'Sua caixa'}</span><span class="${over?'warn':''}">US$${usd.toFixed(0)} / US$${lim*boxes}</span></div><div class="track"><div class="fill ${over?'warn':''}" style="width:${pct}%"></div></div>${over?`<div class="hint">⚠️ Passou de US$${lim} por caixa — dividimos em ${boxes} caixas (frete ×${boxes}). Tire itens pra voltar a 1 caixa.</div>`:`<div class="hint">Cada caixa leva até US$${lim} em produtos, isenta de imposto de importação.</div>`}</div>`;
+  const sk=s=>s?`'${String(s).replace(/'/g,"")}'`:'null';
+  let h=items.map(x=>`<div class="ci"><img src="${img(x.p)}" onerror="imgErr(this,'x')" alt=""><div class="i"><div class="nm">${esc(x.p.nome)}</div>${x.size?`<div class="sz" style="font-size:12px;color:var(--muted);margin:2px 0">Tamanho: <b style="color:var(--navy-ink)">${esc(x.size)}</b></div>`:''}<div class="pr">${BRL.format(x.p.preco)}</div><div class="q"><button onclick="setQtyCart('${x.p.id}',${sk(x.size)},${x.qty-1})">−</button><span>${x.qty}</span><button onclick="setQtyCart('${x.p.id}',${sk(x.size)},${x.qty+1})">+</button></div></div><button class="rm" onclick="setQtyCart('${x.p.id}',${sk(x.size)},0)">remover</button></div>`).join('');
+  h+=`<div class="capbar"><div class="lab"><span>${boxes>1?boxes+' envios':'Seu pedido'}</span><span class="${over?'warn':''}">US$${usd.toFixed(0)} / US$${lim*boxes}</span></div><div class="track"><div class="fill ${over?'warn':''}" style="width:${pct}%"></div></div>${over?`<div class="hint">⚠️ Passou de US$${lim} por envio — dividimos em ${boxes} envios (frete ×${boxes}). Tire itens pra voltar a 1 envio.</div>`:`<div class="hint">Cada envio leva até US$${lim} em produtos, isento de imposto de importação.</div>`}</div>`;
   const fpi=frete/qty;let trg;
-  if(qty===1){trg=`🎯 Adicione mais 1 produto na caixa e o frete por item <b>cai pela metade</b>!`;}
+  if(qty===1){trg=`🎯 Adicione mais 1 produto no pedido e o frete por item <b>cai pela metade</b>!`;}
   else{trg=`🎉 Frete dividido em ${qty} itens: só <b>${BRL.format(fpi)}</b> por produto!`;}
-  h+=`<div class="frete-box"><div class="big">🚚 Frete internacional: ${BRL.format(frete)} ${boxes>1?'('+boxes+' caixas)':'por caixa'}</div><div class="sub">O frete é cobrado por caixa, não por item. Quanto mais produtos você junta (até US$${lim}), mais barato fica por produto.</div><div class="trg">${trg}</div></div>`;
+  h+=`<div class="frete-box"><div class="big">🚚 Frete internacional: ${BRL.format(frete)} ${boxes>1?'('+boxes+' envios)':'por envio'}</div><div class="sub">O frete é cobrado por envio, não por item. Quanto mais produtos você junta (até US$${lim}), mais barato fica por produto.</div><div class="trg">${trg}</div></div>`;
   body.innerHTML=h;
   foot.innerHTML=`<div class="row"><span>Produtos (${qty})</span><b>${BRL.format(prod)}</b></div><div class="row"><span>Frete internacional</span><b>${BRL.format(frete)}</b></div><div class="row tot"><span>Total</span><span>${BRL.format(total)}</span></div><button class="go" onclick="cartCheckout()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg> Finalizar no WhatsApp</button><p class="hint" style="text-align:center;margin:8px 0 0;font-size:11.5px;color:var(--muted)">Imposto incluso · entrega 10–15 dias úteis</p>`;
 }
 function cartCheckout(){
-  const items=cartItems();if(!items.length){toast('Sua caixa está vazia.');return;}
+  const items=cartItems();if(!items.length){toast('Seu pedido está vazio.');return;}
   const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}
   const boxes=cartBoxes(),frete=cartFrete(),prod=cartProd(),total=cartTotal();
-  let m=`Olá! Montei minha caixa de importação pela IA USA 🇺🇸📦\n\n`;
-  items.forEach((x,i)=>{m+=`${i+1}. ${x.p.nome} — ${x.qty}x — ${BRL.format(x.p.preco*x.qty)}\n`;});
-  m+=`\nProdutos: ${BRL.format(prod)}\nFrete internacional: ${BRL.format(frete)}${boxes>1?` (${boxes} caixas)`:''}\n*Total: ${BRL.format(total)}* (imposto incluso)\nEntrega: 10 a 15 dias úteis.\n\nPode preparar meu Pix e a declaração de importação? 🙏`;
-  items.forEach(x=>{const cb=+x.p.custo_brl||0;db.from('pedidos').insert({produto_id:x.p.id,produto_nome:x.p.nome,asin:x.p.asin||null,qtd:x.qty,valor:x.p.preco*x.qty,frete:0,total:x.p.preco*x.qty,custo_brl:cb,lucro:Math.round((x.p.preco-cb)*x.qty*100)/100}).then(()=>{});});
+  let m=`Olá! Montei meu pedido de importação pela IA USA 🇺🇸🛒\n\n`;
+  items.forEach((x,i)=>{m+=`${i+1}. ${x.p.nome}${x.size?` (Tam: ${x.size})`:''} — ${x.qty}x — ${BRL.format(x.p.preco*x.qty)}\n`;});
+  m+=`\nProdutos: ${BRL.format(prod)}\nFrete internacional: ${BRL.format(frete)}${boxes>1?` (${boxes} envios)`:''}\n*Total: ${BRL.format(total)}* (imposto incluso)\nEntrega: 10 a 15 dias úteis.\n\nPode confirmar a disponibilidade e preparar meu pagamento? 🙏`;
+  items.forEach(x=>{const cb=+x.p.custo_brl||0;db.from('pedidos').insert({produto_id:x.p.id,produto_nome:x.p.nome,asin:x.p.asin||null,tamanho:x.size||null,qtd:x.qty,valor:x.p.preco*x.qty,frete:0,total:x.p.preco*x.qty,custo_brl:cb,lucro:Math.round((x.p.preco-cb)*x.qty*100)/100}).then(()=>{});});
   window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');
 }
 
