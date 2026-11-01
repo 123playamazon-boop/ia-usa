@@ -267,6 +267,48 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
 .prow .i .m{color:var(--muted);font-size:11.5px}
 .saved{color:var(--ok);font-size:12px;font-weight:700;opacity:0;transition:.3s}.saved.show{opacity:1}
 .panel-link{position:fixed;bottom:14px;right:14px;z-index:40;background:var(--navy);color:#fff;border:0;font-size:11px;font-weight:700;padding:9px 13px;border-radius:999px;box-shadow:var(--shadow);opacity:.75}
+/* ===== CARRINHO / CAIXA ===== */
+.cartfab{position:fixed;right:16px;bottom:16px;z-index:65;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:13px 18px;font-weight:800;font-size:14px;box-shadow:var(--shadow-lg);display:none;align-items:center;gap:9px;cursor:pointer}
+.cartfab.on{display:inline-flex}
+.cartfab svg{width:20px;height:20px}
+.cartfab .cnt{background:#fff;color:var(--accent-d);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 6px}
+.cart-bg{position:fixed;inset:0;z-index:82;background:rgba(10,20,34,.5);opacity:0;pointer-events:none;transition:.2s}
+.cart-bg.on{opacity:1;pointer-events:auto}
+.cart{position:fixed;top:0;right:0;bottom:0;z-index:83;width:92%;max-width:420px;background:var(--bg);transform:translateX(100%);transition:transform .24s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.cart.on{transform:none}
+.cart-top{background:var(--navy);color:#fff;padding:16px 18px;display:flex;align-items:center;justify-content:space-between}
+.cart-top b{font-size:16px}
+.cart-top button{width:34px;height:34px;border:0;background:rgba(255,255,255,.12);border-radius:9px;color:#fff;font-size:15px;cursor:pointer}
+.cart-body{flex:1;overflow-y:auto;padding:14px}
+.cart-empty{text-align:center;color:var(--muted);padding:50px 20px;font-size:14px}
+.ci{display:flex;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
+.ci img{width:56px;height:56px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:9px;flex:0 0 auto;mix-blend-mode:multiply}
+.ci .i{flex:1;min-width:0}
+.ci .nm{font-size:12.8px;font-weight:600;line-height:1.3;max-height:2.6em;overflow:hidden}
+.ci .pr{font-weight:800;color:var(--navy-ink);font-size:14px;margin-top:3px}
+.ci .q{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;width:fit-content;margin-top:6px}
+.ci .q button{width:30px;height:30px;border:0;background:var(--surface-2);font-size:16px;font-weight:700;cursor:pointer}
+.ci .q span{min-width:30px;text-align:center;font-weight:700;font-size:13px}
+.ci .rm{border:0;background:transparent;color:var(--faint);font-size:11px;font-weight:700;cursor:pointer;margin-top:5px;padding:0}
+.capbar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.capbar .lab{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:7px}
+.capbar .lab .warn{color:var(--warn)}
+.capbar .track{height:8px;background:var(--surface-3);border-radius:999px;overflow:hidden}
+.capbar .fill{height:100%;background:var(--ok);border-radius:999px;transition:.3s}
+.capbar .fill.warn{background:var(--warn)}
+.capbar .hint{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.45}
+.frete-box{background:linear-gradient(135deg,var(--navy),var(--navy-3));color:#fff;border-radius:12px;padding:13px 15px;margin-bottom:10px}
+.frete-box .big{font-size:13.5px;font-weight:700}
+.frete-box .sub{font-size:12px;color:#cadbec;margin-top:4px;line-height:1.5}
+.frete-box .trg{background:rgba(244,121,32,.22);border:1px solid rgba(244,121,32,.45);border-radius:9px;padding:9px 11px;margin-top:10px;font-size:12.3px;font-weight:700;color:#ffdcb8;line-height:1.45}
+.cart-foot{border-top:1px solid var(--line);background:var(--surface);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.cart-foot .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;color:var(--muted)}
+.cart-foot .row b{color:var(--ink)}
+.cart-foot .row.tot{font-size:17px;font-weight:800;color:var(--ink);margin:9px 0 12px}
+.cart-foot .go{width:100%;border:0;background:var(--wa);color:#fff;font-weight:800;font-size:15px;padding:15px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer}
+.cart-foot .go svg{width:19px;height:19px}
+.addcart{margin-top:8px;border:1.5px solid var(--accent);background:#fff;color:var(--accent-d);font-weight:800;font-size:var(--fs-btn);padding:10px;border-radius:9px;width:100%;cursor:pointer}
+.addcart:hover{background:var(--accent-soft)}
 .toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:#0E1A2B;color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.25s;z-index:95;pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -354,6 +396,13 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
   <div class="pcard"><h3>Produtos no catálogo</h3><div class="plist" id="plist"></div></div>
 </main>
 
+<button class="cartfab" id="cartFab" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Minha caixa <span class="cnt" id="cartCnt">0</span></button>
+<div class="cart-bg" id="cartBg" onclick="closeCart()"></div>
+<aside class="cart" id="cartDrawer">
+  <div class="cart-top"><b>📦 Minha caixa de importação</b><button onclick="closeCart()" aria-label="Fechar">✕</button></div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="cart-foot" id="cartFoot"></div>
+</aside>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -376,7 +425,7 @@ async function loadAll(){
     const {data,error}=await db.from('produtos').select('*, variacoes(tamanho,ordem), fotos(url,ordem)').eq('ativo',true).order('ordem');
     if(error) throw error;
     PRODUTOS=(data||[]).map(p=>({...p,sizes:(p.variacoes||[]).sort((a,b)=>a.ordem-b.ordem).map(v=>v.tamanho),photos:(p.fotos||[]).sort((a,b)=>a.ordem-b.ordem).map(f=>f.url)}));
-    applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); route(); logEvento('visita');
+    loadCart(); applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); updateCartBtn(); route(); logEvento('visita');
   }catch(e){ document.getElementById('shelves').innerHTML=`<div class="empty">Erro ao conectar: ${esc(e.message||e)}</div>`; }
 }
 function cats(){ const s=new Set(PRODUTOS.map(p=>p.categoria).filter(Boolean)); return CAT_ORDER.filter(c=>s.has(c)).concat([...s].filter(c=>!CAT_ORDER.includes(c))); }
@@ -424,7 +473,7 @@ function cardHtml(p){
       <div class="pr"><span class="now">${BRL.format(p.preco)}</span>${p.preco_de&&p.preco_de>p.preco?`<span class="old">${BRL.format(p.preco_de)}</span>`:''}</div>
       <div class="save">${d?`Economize ${BRL.format(p.preco_de-p.preco)}`:'&nbsp;'}</div>
       <div class="shipl">Entrega ${esc(p.prazo||'10–15 dias')} · <b>frete incluso</b></div>
-      <button class="buy" onclick="event.stopPropagation();openProduto('${p.id}')">Ver produto</button>
+      <button class="buy" onclick="event.stopPropagation();addToCart('${p.id}')">+ Adicionar à caixa</button>
     </div></article>`;
 }
 function renderShelves(){
@@ -484,8 +533,8 @@ function openProduto(id,fromHash){
   </div>
   <div class="pp-cta"><div class="in">
     <div class="tot"><div class="lb">Total</div><div class="vl" id="ppTot">${BRL.format(p.preco)}</div></div>
-    <button class="cta" id="ppCta" onclick="goWhats(event,'página do produto')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.82 9.82 0 001.763 5.62l-.998 3.648 3.733-.967z"/></svg> Quero importar com a IA</button>
-  </div><p class="hint">🤖 Uma assistente de compras com IA calcula o total, tira suas dúvidas e cuida da importação de ponta a ponta.</p></div>`;
+    <button class="cta" id="ppCta" style="background:var(--accent)" onclick="addToCart(cur.id,curQty)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg> Adicionar à caixa</button>
+  </div><p class="hint">📦 Junte vários produtos numa caixa e <b>divida o frete</b> — quanto mais você leva (até US$50), mais barato por item. A IA fecha tudo no WhatsApp.</p></div>`;
   setView('produto');window.scrollTo(0,0);
 }
 function backToLoja(){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}setView('loja');}
@@ -523,6 +572,49 @@ function goWhats(e,origem){
   window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');return false;
 }
 function logEvento(tipo,pid){try{db.from('eventos').insert({tipo,produto_id:pid||null}).then(()=>{});}catch(e){}}
+
+/* ===== CARRINHO / CAIXA (frete por caixa, gatilho de AOV) ===== */
+let CART=[];
+function loadCart(){try{CART=JSON.parse(localStorage.getItem('iausa_cart')||'[]')||[];}catch(e){CART=[];}}
+function saveCart(){try{localStorage.setItem('iausa_cart',JSON.stringify(CART));}catch(e){}}
+function cartItems(){return CART.map(c=>({qty:c.qty,p:PRODUTOS.find(x=>x.id===c.id)})).filter(x=>x.p&&x.qty>0);}
+function cartQty(){return cartItems().reduce((s,x)=>s+x.qty,0);}
+function cartUsd(){return cartItems().reduce((s,x)=>s+(+x.p.preco_usd||0)*x.qty,0);}
+function cartProd(){return cartItems().reduce((s,x)=>s+(+x.p.preco||0)*x.qty,0);}
+function freteBox(){return +CONFIG.frete_brl||139.82;}
+function limiteUsd(){return +CONFIG.limite_usd||50;}
+function cartBoxes(){return Math.max(1,Math.ceil((cartUsd()/limiteUsd())||0));}
+function cartFrete(){return freteBox()*cartBoxes();}
+function cartTotal(){return cartProd()+cartFrete();}
+function updateCartBtn(){const n=cartQty();const c=document.getElementById('cartCnt');if(c)c.textContent=n;const fab=document.getElementById('cartFab');if(fab)fab.classList.toggle('on',n>0);}
+function addToCart(id,qty){qty=qty||1;const e=CART.find(c=>c.id===id);if(e)e.qty+=qty;else CART.push({id,qty});saveCart();updateCartBtn();toast('Adicionado à caixa 📦');openCart();}
+function setQtyCart(id,q){const e=CART.find(c=>c.id===id);if(e){e.qty=Math.max(0,q);if(e.qty<=0)CART=CART.filter(c=>c.id!==id);}saveCart();renderCart();updateCartBtn();}
+function openCart(){renderCart();document.getElementById('cartBg').classList.add('on');document.getElementById('cartDrawer').classList.add('on');document.body.style.overflow='hidden';}
+function closeCart(){document.getElementById('cartBg').classList.remove('on');document.getElementById('cartDrawer').classList.remove('on');document.body.style.overflow='';}
+function renderCart(){
+  const items=cartItems();const body=document.getElementById('cartBody');const foot=document.getElementById('cartFoot');
+  if(!items.length){body.innerHTML='<div class="cart-empty">Sua caixa está vazia.<br>Junte produtos e <b>divida o frete</b> entre eles. 📦</div>';foot.innerHTML='';return;}
+  const usd=cartUsd(),lim=limiteUsd(),boxes=cartBoxes(),frete=cartFrete(),prod=cartProd(),qty=cartQty(),total=cartTotal();
+  const pct=Math.min(100,usd/(lim*boxes)*100),over=usd>lim;
+  let h=items.map(x=>`<div class="ci"><img src="${img(x.p)}" onerror="imgErr(this,'x')" alt=""><div class="i"><div class="nm">${esc(x.p.nome)}</div><div class="pr">${BRL.format(x.p.preco)}</div><div class="q"><button onclick="setQtyCart('${x.p.id}',${x.qty-1})">−</button><span>${x.qty}</span><button onclick="setQtyCart('${x.p.id}',${x.qty+1})">+</button></div></div><button class="rm" onclick="setQtyCart('${x.p.id}',0)">remover</button></div>`).join('');
+  h+=`<div class="capbar"><div class="lab"><span>${boxes>1?boxes+' caixas':'Sua caixa'}</span><span class="${over?'warn':''}">US$${usd.toFixed(0)} / US$${lim*boxes}</span></div><div class="track"><div class="fill ${over?'warn':''}" style="width:${pct}%"></div></div>${over?`<div class="hint">⚠️ Passou de US$${lim} por caixa — dividimos em ${boxes} caixas (frete ×${boxes}). Tire itens pra voltar a 1 caixa.</div>`:`<div class="hint">Cada caixa leva até US$${lim} em produtos, isenta de imposto de importação.</div>`}</div>`;
+  const fpi=frete/qty;let trg;
+  if(qty===1){trg=`🎯 Adicione mais 1 produto na caixa e o frete por item <b>cai pela metade</b>!`;}
+  else{trg=`🎉 Frete dividido em ${qty} itens: só <b>${BRL.format(fpi)}</b> por produto!`;}
+  h+=`<div class="frete-box"><div class="big">🚚 Frete internacional: ${BRL.format(frete)} ${boxes>1?'('+boxes+' caixas)':'por caixa'}</div><div class="sub">O frete é cobrado por caixa, não por item. Quanto mais produtos você junta (até US$${lim}), mais barato fica por produto.</div><div class="trg">${trg}</div></div>`;
+  body.innerHTML=h;
+  foot.innerHTML=`<div class="row"><span>Produtos (${qty})</span><b>${BRL.format(prod)}</b></div><div class="row"><span>Frete internacional</span><b>${BRL.format(frete)}</b></div><div class="row tot"><span>Total</span><span>${BRL.format(total)}</span></div><button class="go" onclick="cartCheckout()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg> Finalizar no WhatsApp</button><p class="hint" style="text-align:center;margin:8px 0 0;font-size:11.5px;color:var(--muted)">Imposto incluso · entrega 10–15 dias úteis</p>`;
+}
+function cartCheckout(){
+  const items=cartItems();if(!items.length){toast('Sua caixa está vazia.');return;}
+  const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}
+  const boxes=cartBoxes(),frete=cartFrete(),prod=cartProd(),total=cartTotal();
+  let m=`Olá! Montei minha caixa de importação pela IA USA 🇺🇸📦\n\n`;
+  items.forEach((x,i)=>{m+=`${i+1}. ${x.p.nome} — ${x.qty}x — ${BRL.format(x.p.preco*x.qty)}\n`;});
+  m+=`\nProdutos: ${BRL.format(prod)}\nFrete internacional: ${BRL.format(frete)}${boxes>1?` (${boxes} caixas)`:''}\n*Total: ${BRL.format(total)}* (imposto incluso)\nEntrega: 10 a 15 dias úteis.\n\nPode preparar meu Pix e a declaração de importação? 🙏`;
+  items.forEach(x=>{const cb=+x.p.custo_brl||0;db.from('pedidos').insert({produto_id:x.p.id,produto_nome:x.p.nome,asin:x.p.asin||null,qtd:x.qty,valor:x.p.preco*x.qty,frete:0,total:x.p.preco*x.qty,custo_brl:cb,lucro:Math.round((x.p.preco-cb)*x.qty*100)/100}).then(()=>{});});
+  window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');
+}
 
 /* ===== INFO PAGES ===== */
 function infoContent(key){
