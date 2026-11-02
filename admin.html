@@ -575,7 +575,7 @@ function gerarDeclaracao(){
     <b>${esc(p.cliente_nome)||'(preencher)'}</b> — CPF: ${esc(p.cliente_cpf)||'(preencher)'}<br>
     Endereço: ${esc(p.cliente_endereco)||'(preencher)'}${p.cliente_cep?' — CEP: '+esc(p.cliente_cep):''}<br>
     Cidade de destino: ${esc(p.cliente_cidade)||'(preencher)'} · Brasil · Tel: ${esc(p.cliente_wpp)||'—'}</div>
-  <div class="decl"><b>Declaração:</b> Declaro que as informações aqui prestadas são verdadeiras, que o valor declarado corresponde ao valor real da mercadoria e que os bens destinam-se ao destinatário acima, em conformidade com a legislação aduaneira brasileira (Remessa Conforme).</div>
+  <div class="decl"><b>Declaração:</b> Declaro que as informações aqui prestadas são verdadeiras, que o valor declarado corresponde ao valor real da mercadoria e que os bens destinam-se ao destinatário acima, em conformidade com a legislação aduaneira brasileira.</div>
   <div class="noprint"><button onclick="window.print()">🖨️ Imprimir / Salvar PDF</button></div>
   </body></html>`;
   const w=window.open('','_blank'); if(w){w.document.write(html);w.document.close();}

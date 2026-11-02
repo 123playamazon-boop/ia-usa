@@ -51,7 +51,7 @@ input,select{font-family:inherit;width:100%;padding:10px 12px;border:1px solid v
 <div class="toast" id="toast"></div>
 <script>
 const API="https://qfxemysisbyqevxfihvd.supabase.co/functions/v1/iausa-admin";
-const REMET={nome:"Direct Box USA",end:"Stirling Road, STE I, Hollywood, FL 33020, USA"};
+let REMET={nome:"Direct Box USA",end:"Stirling Road, STE I, Hollywood, FL 33020, USA",frete:139.81};
 let PASS=localStorage.getItem("iausa_admin_pass")||"";
 let PEDIDOS=[];
 const $=s=>document.querySelector(s);
@@ -66,8 +66,8 @@ function loginView(){
   <button class="btn" style="width:100%;margin-top:12px" onclick="doLogin()">Entrar</button></div>`;
   setTimeout(()=>document.getElementById("pw")?.focus(),100);
 }
-async function doLogin(){PASS=document.getElementById("pw").value.trim();const r=await api("list");if(r&&r.ok){localStorage.setItem("iausa_admin_pass",PASS);PEDIDOS=r.pedidos||[];render();}else{toast("Senha inválida");}}
-async function load(){const r=await api("list");if(r&&r.ok){PEDIDOS=r.pedidos||[];render();}else if(r&&r.error==="senha_invalida"){PASS="";loginView();}else{toast("Erro ao carregar");}}
+async function doLogin(){PASS=document.getElementById("pw").value.trim();const r=await api("list");if(r&&r.ok){localStorage.setItem("iausa_admin_pass",PASS);PEDIDOS=r.pedidos||[];if(r.remetente){REMET={nome:r.remetente.nome||REMET.nome,end:r.remetente.endereco||REMET.end,frete:(r.remetente.frete_brl!=null?+r.remetente.frete_brl:REMET.frete)};}render();}else{toast("Senha inválida");}}
+async function load(){const r=await api("list");if(r&&r.ok){PEDIDOS=r.pedidos||[];if(r.remetente){REMET={nome:r.remetente.nome||REMET.nome,end:r.remetente.endereco||REMET.end,frete:(r.remetente.frete_brl!=null?+r.remetente.frete_brl:REMET.frete)};}render();}else if(r&&r.error==="senha_invalida"){PASS="";loginView();}else{toast("Erro ao carregar");}}
 
 function itemsHtml(p){const its=Array.isArray(p.itens)?p.itens:[];if(!its.length)return `<div class="muted">Pedido em texto livre${p.dados_extra?' — ver abaixo':''}.</div>`;return its.map(i=>`<div class="it">• ${esc(i.nome||'Produto')}${i.tamanho?` — Tam: ${esc(i.tamanho)}`:''}${i.qtd&&i.qtd>1?` — ${i.qtd}x`:''}</div>`).join('');}
 function stepHtml(p){const pago=true,decl=!!(p.nome&&p.cpf&&p.endereco),etq=!!p.etiqueta_ok,rastr=!!p.rastreio,avis=!!p.rastreio_enviado;
@@ -117,30 +117,47 @@ async function verEtiqueta(id){const p=PEDIDOS.find(x=>x.id===id);let link=p&&p.
 async function salvarRastreio(id){const rastreio=document.getElementById("rk_"+id).value.trim();const transportadora=document.getElementById("tr_"+id).value;const r=await api("update",{id,rastreio,transportadora});if(r.ok){const p=PEDIDOS.find(x=>x.id===id);if(p){p.rastreio=rastreio;p.transportadora=transportadora;}toast("Rastreio salvo");render();}else toast("Erro");}
 async function avisar(id){const rastreio=document.getElementById("rk_"+id).value.trim();if(!rastreio){toast("Coloque o rastreio primeiro");return;}const transportadora=document.getElementById("tr_"+id).value;if(!confirm("Enviar o código de rastreio pro WhatsApp do cliente?"))return;const r=await api("notify",{id,rastreio,transportadora});if(r.ok){toast(r.sent?"Cliente avisado no WhatsApp ✓":"Salvo, mas o envio falhou");load();}else toast("Erro: "+(r.error||""));}
 
+function simplificaAlf(nome){return (nome||'').toLowerCase().replace(/\b\d+[a-z]{0,3}\b/g,' ').replace(/\b(ml|oz|g|kg|cm|un|pcs|pack|kit)\b/g,' ').replace(/[^0-9a-zà-ÿ ]/g,' ').replace(/\s+/g,' ').trim().split(' ').slice(0,4).join(' ')||'mercadoria';}
 function imprimir(id){
   const p=PEDIDOS.find(x=>x.id===id);if(!p)return;
-  const its=Array.isArray(p.itens)?p.itens:[];
-  const linhas=its.length?its.map(i=>`<tr><td>${esc(i.nome||'Produto')}${i.tamanho?` (Tam ${esc(i.tamanho)})`:''}</td><td style="text-align:center">${i.qtd||1}</td></tr>`).join(''):`<tr><td colspan="2">${esc(p.dados_extra||'—')}</td></tr>`;
-  const w=window.open('','_blank');
+  const its=Array.isArray(p.itens)&&p.itens.length?p.itens:[{nome:p.dados_extra||'Mercadoria',qtd:1}];
+  let _peso=0,_merc=0;
+  const linhas=its.map(i=>{const q=+i.qtd||1,u=+i.preco||0,v=u*q,pk=(+i.peso_kg||0.3)*q;_peso+=pk;_merc+=v;const d=esc(i.desc_alf||simplificaAlf(i.nome));const nc=esc(i.ncm||'(classificar)');return `<tr><td>${nc}</td><td>${d}</td><td class="c">${q}</td><td class="c">${pk.toFixed(2)}</td><td class="n">${u?u.toFixed(2):'—'}</td><td class="n">${v?v.toFixed(2):'—'}</td></tr>`;}).join('');
+  const _frete=+REMET.frete||0,_seg=0,_total=_merc+_frete+_seg;
+  const falta=(!p.cpf||!p.endereco);
+  const w=window.open('','_blank'); if(!w){toast('Permita pop-ups para abrir a declaração');return;}
   w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Declaração #${p.id}</title>
-  <style>body{font-family:Arial,sans-serif;color:#111;max-width:740px;margin:24px auto;padding:0 20px;font-size:13px}
-  h1{font-size:18px;text-align:center;border-bottom:2px solid #0d2440;padding-bottom:8px;color:#0d2440}
-  .box{border:1px solid #ccc;border-radius:8px;padding:12px 14px;margin:12px 0}
-  .box h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;color:#6b7c92;letter-spacing:.05em}
-  table{width:100%;border-collapse:collapse;margin-top:6px}th,td{border:1px solid #ddd;padding:7px 9px;text-align:left;font-size:12.5px}th{background:#f4f6fa}
-  .row{display:flex;gap:20px}.row>div{flex:1}
-  .ass{margin-top:40px;display:flex;gap:40px}.ass>div{flex:1;border-top:1px solid #333;padding-top:5px;text-align:center;font-size:11px;color:#444}
-  .ft{margin-top:18px;font-size:10.5px;color:#888;text-align:center}
-  @media print{button{display:none}}
-  </style></head><body>
-  <h1>DECLARAÇÃO DE CONTEÚDO — Importação Internacional</h1>
-  <div class="box"><h3>Remetente (Exportador)</h3><b>${REMET.nome}</b><br>${REMET.end}</div>
-  <div class="box"><h3>Destinatário (Importador)</h3><b>${esc(p.nome||'—')}</b> &nbsp; CPF: <b>${esc(p.cpf||'—')}</b><br>${esc(p.endereco||'—')}<br>Tel: ${esc(p.phone||'—')}</div>
-  <div class="box"><h3>Conteúdo</h3><table><thead><tr><th>Descrição do produto</th><th style="width:80px;text-align:center">Qtd.</th></tr></thead><tbody>${linhas}</tbody></table></div>
-  <div class="box"><h3>Declaração</h3>Declaro para os devidos fins que o conteúdo acima corresponde a produtos originais adquiridos em loja oficial nos Estados Unidos, destinados a uso pessoal do importador, dentro do limite de isenção aplicável.</div>
-  <div class="ass"><div>Assinatura do responsável · ${REMET.nome}</div><div>Data: ${new Date().toLocaleDateString('pt-BR')}</div></div>
-  <div class="ft">Pedido #${p.id} · IA USA · Importações dos EUA · gerado em ${new Date().toLocaleString('pt-BR')}</div>
-  <p style="text-align:center;margin-top:16px"><button onclick="window.print()" style="padding:9px 18px;border:0;border-radius:8px;background:#f47920;color:#fff;font-weight:700;cursor:pointer">Imprimir / Salvar PDF</button></p>
+  <style>*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#111;max-width:440px;margin:16px auto;padding:0 10px;font-size:12px}
+  .lbl{border:2px solid #111;border-radius:4px;overflow:hidden}
+  .rem{padding:10px 12px;border-bottom:2px solid #111}.rem b{font-size:13px}.rem span{font-size:11px;color:#333}
+  .h1{background:#111;color:#fff;font-size:13px;font-weight:700;padding:6px 12px;letter-spacing:.02em}
+  .meta{font-size:10px;color:#555;padding:3px 12px}
+  table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:5px 6px;font-size:11px;text-align:left}
+  th{background:#eee;text-transform:uppercase;font-size:9.5px}.c{text-align:center}.n{text-align:right}
+  .sum{width:100%;border-collapse:collapse;font-size:11.5px}.sum td{border:1px solid #333;padding:5px 8px}.sum .v{text-align:right}
+  .sum .big td{font-weight:800;font-size:13px;background:#f4f4f4}
+  .dest{padding:10px 12px;border-top:2px solid #111;font-size:12px}.dest h2{font-size:10px;text-transform:uppercase;color:#132B50;margin:0 0 5px}
+  .decl{font-size:10px;color:#333;padding:8px 12px;border-top:1px solid #999}
+  .warn{background:#FFF3CD;border:1px solid #E0B94A;color:#6b4e28;font-size:11px;padding:8px 10px;border-radius:5px;margin-bottom:10px}
+  .np{text-align:center;margin:14px 0}.np button{background:#f47920;color:#fff;border:0;padding:10px 20px;border-radius:7px;font-weight:700;cursor:pointer;font-size:14px}
+  @media print{.np{display:none}body{margin:0}}</style></head><body>
+  ${falta?'<div class="warn">⚠ Faltam CPF e/ou endereço do destinatário neste pedido.</div>':''}
+  <div class="lbl">
+    <div class="rem"><b>${esc(REMET.nome)}</b><br><span>${esc(REMET.end)}</span><br><span>Estados Unidos</span></div>
+    <div class="h1">DECLARAÇÃO DE CONTEÚDO</div>
+    <div class="meta">Remessa internacional porta a porta · Pedido #${p.id} · ${new Date().toLocaleDateString('pt-BR')}${p.rastreio?' · Rastreio: '+esc(p.rastreio):''}</div>
+    <table><thead><tr><th>Cód. NCM</th><th>Descrição do conteúdo</th><th class="c">Qtde</th><th class="c">Peso KG</th><th class="n">Unit BRL</th><th class="n">Valor BRL</th></tr></thead><tbody>${linhas}</tbody></table>
+    <table class="sum">
+      <tr><td>Mercadorias — Peso Bruto Total KG</td><td class="v">${_peso.toFixed(2)}</td></tr>
+      <tr><td>Mercadorias — Total BRL</td><td class="v">${_merc.toFixed(2)}</td></tr>
+      <tr><td>Frete BRL</td><td class="v">${_frete.toFixed(2)}</td></tr>
+      <tr><td>Seguro BRL</td><td class="v">${_seg.toFixed(2)}</td></tr>
+      <tr class="big"><td>Total BRL (Merc. + Frete + Seguro)</td><td class="v">${_total.toFixed(2)}</td></tr>
+    </table>
+    <div class="dest"><h2>Destinatário / Importador</h2><b>${esc(p.nome||'(preencher)')}</b> — CPF: ${esc(p.cpf||'(preencher)')}<br>${esc(p.endereco||'(preencher)')}<br>Brasil · Tel: ${esc(p.phone||'—')}</div>
+    <div class="decl">Declaro que as informações aqui prestadas são verdadeiras e que o valor declarado corresponde ao valor real da mercadoria, destinada ao destinatário acima, em conformidade com a legislação aduaneira brasileira.</div>
+  </div>
+  <div class="np"><button onclick="window.print()">🖨️ Imprimir / Salvar PDF</button></div>
   </body></html>`);
   w.document.close();
 }
