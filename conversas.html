@@ -70,7 +70,7 @@ function sair(){localStorage.removeItem("iausa_admin_pass");PASS="";CUR=null;cle
 
 function shell(){
   document.getElementById("app").innerHTML=`<header><span class="t">IA <b>USA</b> · Conversas</span><span class="live"><span class="dot"></span>ao vivo</span><span class="sp"></span>
-    <a class="btn g" href="admin.html">📊 Dashboard</a><a class="btn g" href="pedidos.html">📦 Pedidos</a><button class="btn ghost" onclick="sair()">Sair</button></header>
+    <a class="btn g" href="admin.html">📊 Dashboard</a><a class="btn g" href="trafego.html">📈 Tráfego</a><a class="btn g" href="pedidos.html">📦 Pedidos</a><button class="btn ghost" onclick="sair()">Sair</button></header>
     <div class="wrap"><div class="side" id="side"></div><div class="main" id="main"><div class="empty">Selecione uma conversa à esquerda.</div></div></div>`;
   renderSide();
   clearInterval(timerList);timerList=setInterval(refreshList,7000);

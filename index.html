@@ -494,7 +494,7 @@ function updateFooterCo(){document.getElementById('footCo').textContent=`${CONFI
 function img(p){return (p.photos&&p.photos[0])||ph(p.nome);}
 function descPct(p){return (p.preco_de&&p.preco_de>p.preco)?Math.round((1-p.preco/p.preco_de)*100):0;}
 function waNum(){return (CONFIG.whatsapp||'').replace(/\D/g,'');}
-function waGeral(){const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}window.open(`https://wa.me/${n}?text=${encodeURIComponent('Olá! Vim pela loja IA USA e quero tirar uma dúvida. 🙂')}`,'_blank');}
+function waGeral(){logEvento('whatsapp');const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}window.open(`https://wa.me/${n}?text=${encodeURIComponent('Olá! Vim pela loja IA USA e quero tirar uma dúvida. 🙂')}`,'_blank');}
 
 /* ===== VIEWS ===== */
 const VIEWS=['loja','produto','info','painel'];
@@ -556,7 +556,7 @@ function renderShelves(){
     return `<section class="shelf"><div class="shelf-h"><h2>${esc(c)}</h2>${prods.length>2?`<a onclick="pickCat('${c.replace(/'/g,"\\'")}')">Ver todos ›</a>`:''}</div><div class="rail">${prods.map(cardHtml).join('')}</div></section>`;}).filter(Boolean);const _mb='<div class=\"midbanner\" onclick=\"waGeral()\"><img src=\"assets/banner-hero.jpg\" alt=\"Produtos originais dos EUA — fale com nosso time\" loading=\"lazy\"></div>';if(_s.length>=3)_s.splice(Math.floor(_s.length/2),0,_mb);el.innerHTML=_s.join('')||'<div class="empty">Nenhum produto ativo.</div>';
 }
 function onBusca(){termoBusca=(document.getElementById('busca').value||'').toLowerCase().trim();setView('loja');renderShelves();}
-function searchAI(){const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}const t=(document.getElementById('busca').value||'').trim();const msg=t?`Olá! Quero importar dos EUA: *${t}*. Vocês conseguem achar e me passar o preço final em reais? 🙂`:'Olá! Quero importar um produto dos EUA pela IA USA. Pode me ajudar a achar? 🙂';window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank');}
+function searchAI(){logEvento('whatsapp');const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}const t=(document.getElementById('busca').value||'').trim();const msg=t?`Olá! Quero importar dos EUA: *${t}*. Vocês conseguem achar e me passar o preço final em reais? 🙂`:'Olá! Quero importar um produto dos EUA pela IA USA. Pode me ajudar a achar? 🙂';window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank');}
 
 /* ===== PRODUCT PAGE ===== */
 let cur=null,curSize=null,curQty=1,curFotos=[];
@@ -641,7 +641,7 @@ function goWhats(e,origem){
   if(!n){toast('WhatsApp não configurado.');return false;}
   const cb=custoBrl(cur), lucro=Math.round((cur.preco-cb)*curQty*100)/100;
   db.from('pedidos').insert({produto_id:cur.id,produto_nome:cur.nome,asin:cur.asin||null,tamanho:curSize,qtd:curQty,valor:total,frete:0,total,custo_brl:cb,lucro,cliente_nome:name||null,cliente_cidade:city||null}).then(()=>{});
-  window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');return false;
+  logEvento('whatsapp',cur&&cur.id);window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');return false;
 }
 function logEvento(tipo,pid){try{db.from('eventos').insert({tipo,produto_id:pid||null}).then(()=>{});}catch(e){}}
 
@@ -680,6 +680,7 @@ function renderCart(){
 }
 function cartCheckout(){
   const items=cartItems();if(!items.length){toast('Seu pedido está vazio.');return;}
+  logEvento('whatsapp');
   const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}
   const boxes=cartBoxes(),frete=cartFrete(),prod=cartProd(),total=cartTotal();
   let m=`Olá! Montei meu pedido de importação pela IA USA 🇺🇸🛒\n\n`;
@@ -777,7 +778,7 @@ function openInfo(key){
   </div>`;
   setView('info');window.scrollTo(0,0);
 }
-function trackGo(){const v=(document.getElementById('trk')?.value||'').trim();const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}const msg=v?`Olá! Quero saber o status do meu pedido. Referência: ${v}`:'Olá! Quero rastrear o status do meu pedido. 🙂';window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank');}
+function trackGo(){const v=(document.getElementById('trk')?.value||'').trim();logEvento('whatsapp');const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}const msg=v?`Olá! Quero saber o status do meu pedido. Referência: ${v}`:'Olá! Quero rastrear o status do meu pedido. 🙂';window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank');}
 
 /* ===== PANEL ===== */
 function renderPanel(){const el=document.getElementById('plist');if(!PRODUTOS.length){el.innerHTML='<div class="empty">Nenhum produto.</div>';return;}

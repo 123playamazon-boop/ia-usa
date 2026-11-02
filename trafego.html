@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>IA USA · Tráfego ao vivo</title>
+<style>
+:root{--navy:#0d2440;--navy2:#13325c;--accent:#f47920;--line:#e4e9f0;--muted:#6b7c92;--ok:#16a34a;--bg:#eef1f6}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#13233a;-webkit-font-smoothing:antialiased}
+header{background:var(--navy);color:#fff;padding:13px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+header .t{font-weight:800;font-size:17px}header .t b{color:var(--accent)}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#9fe6ad}
+.live .dot{width:8px;height:8px;border-radius:50%;background:#2ecc71;animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.6)}70%{box-shadow:0 0 0 7px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
+.sp{flex:1}
+.btn{border:0;border-radius:9px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;background:#1f3d6b;color:#fff}
+.btn.ghost{background:rgba(255,255,255,.14)}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+.upd{font-size:11.5px;color:var(--muted);text-align:center;margin:2px 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card .lab{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.card .val{font-size:34px;font-weight:800;letter-spacing:-.02em;margin-top:4px}
+.card .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.card.hi .val{color:var(--accent)}.card.good .val{color:var(--ok)}
+.sec{font-size:13px;font-weight:700;color:var(--navy);margin:22px 0 10px;text-transform:uppercase;letter-spacing:.03em}
+.funnel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.frow{display:flex;align-items:center;gap:12px;padding:7px 0}
+.frow .fn{width:150px;font-size:13.5px;font-weight:600;flex:0 0 auto}
+.frow .bar{flex:1;height:22px;background:#f0f3f8;border-radius:6px;overflow:hidden}
+.frow .fill{height:100%;background:linear-gradient(90deg,#f47920,#f9a05a);border-radius:6px;min-width:2px;transition:width .4s}
+.frow .fv{width:120px;text-align:right;font-size:13px;flex:0 0 auto}.frow .fv b{font-size:15px}
+.frow .fv .pct{color:var(--muted);font-size:11.5px}
+.chart{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.bars{display:flex;align-items:flex-end;gap:5px;height:120px;margin-top:8px}
+.bars .b{flex:1;background:#dfe7f2;border-radius:4px 4px 0 0;position:relative;min-height:3px;transition:height .4s}
+.bars .b.on{background:var(--accent)}
+.bars .b span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9.5px;color:var(--muted)}
+.bars .b em{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10px;font-weight:700;color:var(--navy);font-style:normal}
+.note{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:16px;line-height:1.5}
+.note a{color:var(--accent);font-weight:700}
+.login{max-width:340px;margin:16vh auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 22px;text-align:center}
+.login h1{font-size:19px;margin:0 0 4px}.login p{color:var(--muted);font-size:13px;margin:0 0 18px}
+.login input{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px;margin-bottom:12px}
+.login button{width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px;font-weight:700;font-size:15px;cursor:pointer}
+.alert{background:#FFF3CD;border:1px solid #E0B94A;color:#6b4e28;font-size:12.5px;padding:10px 13px;border-radius:10px;margin-top:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const API="https://qfxemysisbyqevxfihvd.supabase.co/functions/v1/iausa-trafego";
+let PASS=localStorage.getItem("iausa_admin_pass")||"";
+let timer=null;
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+async function api(){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pass:PASS})});return await r.json();}
+function loginView(){document.getElementById("app").innerHTML=`<div class="login"><h1>IA <b style="color:#f47920">USA</b> · Tráfego</h1><p>Acesso da equipe</p><input id="pw" type="password" placeholder="Senha" onkeydown="if(event.key==='Enter')doLogin()"><button onclick="doLogin()">Entrar</button></div>`;setTimeout(()=>document.getElementById('pw')?.focus(),100);}
+async function doLogin(){PASS=document.getElementById("pw").value.trim();const r=await api();if(r&&r.ok){localStorage.setItem("iausa_admin_pass",PASS);start(r);}else alert("Senha inválida");}
+function start(data){shell();paint(data);clearInterval(timer);timer=setInterval(tick,10000);}
+async function tick(){const r=await api();if(r&&r.ok)paint(r);else if(r&&r.error==='senha_invalida'){clearInterval(timer);loginView();}}
+function shell(){document.getElementById("app").innerHTML=`<header><span class="t">IA <b>USA</b> · Tráfego</span><span class="live"><span class="dot"></span>ao vivo</span><span class="sp"></span><a class="btn" href="admin.html">📊 Dashboard</a><a class="btn" href="conversas.html">💬 Conversas</a><button class="btn ghost" onclick="sair()">Sair</button></header><div class="wrap" id="w"></div>`;}
+function sair(){localStorage.removeItem("iausa_admin_pass");clearInterval(timer);loginView();}
+function pct(a,b){return b>0?Math.round(a/b*100):0;}
+function paint(d){
+  const h=d.hoje||{};
+  const visit=h.visitas||0, views=h.views||0, wa=h.whatsapp||0, conv=h.conversas||0, ped=h.pedidos||0, pag=h.pagos||0;
+  const maxF=Math.max(visit,1);
+  const fun=[['👀 Visitas no site',visit,100],['🛍️ Viram produto',views,pct(views,visit)],['💬 Clicaram no WhatsApp',wa,pct(wa,visit)],['🗨️ Iniciaram conversa',conv,pct(conv,visit)],['📦 Fizeram pedido',ped,pct(ped,visit)],['✅ Pagaram',pag,pct(pag,visit)]];
+  const horas=d.por_hora||[]; const maxH=Math.max(1,...horas.map(x=>x.n));
+  const nowH=new Date(d.agora||Date.now());
+  const w=document.getElementById('w');if(!w)return;
+  const alerta = (visit>=30 && wa===0) ? `<div class="alert">⚠️ <b>${visit} visitas</b> e <b>nenhum clique no WhatsApp</b> hoje. Gente chegando mas não puxando o chat — vale ver as gravações no Clarity pra entender onde travam (preço? botão? confiança?).</div>` : (visit>=50 && conv===0 ? `<div class="alert">⚠️ Muita visita e <b>nenhuma conversa</b> iniciada. Veja o Clarity pra entender o gargalo.</div>`:'');
+  w.innerHTML=`
+  <div class="upd">Atualizado agora · última atividade no site: ${d.ultimo_evento?new Date(d.ultimo_evento).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—'} · atualiza sozinho a cada 10s</div>
+  <div class="cards">
+    <div class="card hi"><div class="lab">👀 Visitas hoje</div><div class="val">${visit}</div><div class="sub">${d.visitas_ultima_hora||0} na última hora</div></div>
+    <div class="card"><div class="lab">🛍️ Views de produto</div><div class="val">${views}</div></div>
+    <div class="card"><div class="lab">💬 Cliques no WhatsApp</div><div class="val">${wa}</div><div class="sub">${pct(wa,visit)}% das visitas</div></div>
+    <div class="card"><div class="lab">🗨️ Conversas iniciadas</div><div class="val">${conv}</div></div>
+    <div class="card good"><div class="lab">✅ Pedidos pagos</div><div class="val">${pag}</div><div class="sub">${ped} pedido(s) no total</div></div>
+  </div>
+  ${alerta}
+  <div class="sec">Funil de hoje</div>
+  <div class="funnel">${fun.map(f=>`<div class="frow"><div class="fn">${f[0]}</div><div class="bar"><div class="fill" style="width:${Math.max(2,f[1]/maxF*100)}%"></div></div><div class="fv"><b>${f[1]}</b> <span class="pct">${f[2]}%</span></div></div>`).join('')}</div>
+  <div class="sec">Visitas por hora (hoje)</div>
+  <div class="chart"><div class="bars">${horas.map(x=>`<div class="b ${x.h===nowH.getHours()?'on':''}" style="height:${Math.max(3,x.n/maxH*100)}%">${x.n>0?`<em>${x.n}</em>`:''}<span>${String(x.h).padStart(2,'0')}h</span></div>`).join('')}</div></div>
+  <div class="note">🔍 Pra entender <b>o que os visitantes fazem</b> (onde clicam, onde desistem, gravações de tela), abra o <a href="https://clarity.microsoft.com/projects/view/z7cf563g3a" target="_blank">Microsoft Clarity · projeto IA USA</a>. Os dados aparecem lá com alguns minutos de atraso.</div>`;
+}
+if(PASS){api().then(r=>{if(r&&r.ok)start(r);else loginView();});}else loginView();
+</script>
+</body>
+</html>

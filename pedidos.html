@@ -113,7 +113,7 @@ function card(p){
 function render(){
   const n=PEDIDOS.length;
   document.getElementById("app").innerHTML=`<header><span class="t">IA <b>USA</b> · Pedidos</span><span class="sp"></span>
-    <a class="btn g" href="admin.html" style="text-decoration:none">📊 Dashboard</a><a class="btn g" href="conversas.html" style="text-decoration:none">💬 Conversas</a><button class="btn g" onclick="load()">↻ Atualizar</button><button class="btn ghost" onclick="sair()">Sair</button></header>
+    <a class="btn g" href="admin.html" style="text-decoration:none">📊 Dashboard</a><a class="btn g" href="trafego.html" style="text-decoration:none">📈 Tráfego</a><a class="btn g" href="conversas.html" style="text-decoration:none">💬 Conversas</a><button class="btn g" onclick="load()">↻ Atualizar</button><button class="btn ghost" onclick="sair()">Sair</button></header>
     <div class="wrap">${n?PEDIDOS.map(card).join(''):'<div class="empty">Nenhum pedido ainda. Quando um cliente fechar no WhatsApp, aparece aqui.</div>'}</div>`;
 }
 function sair(){localStorage.removeItem("iausa_admin_pass");PASS="";loginView();}
