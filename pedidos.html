@@ -99,6 +99,14 @@ function card(p){
         <button class="btn ghost" onclick="salvarRastreio(${p.id})">Salvar</button></div>
       ${(!p.rastreio&&p.rastreio_sugerido)?`<div style="font-size:11.5px;color:#1fa14f;margin:-2px 0 4px">🔎 Tracking lido da etiqueta — confira e clique em Salvar.</div>`:''}
       <button class="btn" onclick="avisar(${p.id})">📲 Avisar cliente</button>
+      ${p.rastreio?`<div style="width:100%;border-top:1px dashed var(--line);margin-top:9px;padding-top:9px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">📍 Avisar etapas do envio${p.etapa&&p.etapa!=='despachado'?' · última: <b>'+esc(p.etapa)+'</b>':''}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button class="btn ghost" onclick="etapa(${p.id},'saiu_eua')">✈️ Saiu dos EUA</button>
+          <button class="btn ghost" onclick="etapa(${p.id},'chegou_brasil')">🛬 Chegou no Brasil</button>
+          <button class="btn ghost" onclick="etapa(${p.id},'saiu_entrega')">🚚 Saiu p/ entrega</button>
+          <button class="btn ghost" onclick="etapa(${p.id},'entregue')">✅ Entregue</button>
+        </div></div>`:''}
     </div>
   </div>`;
 }
@@ -116,6 +124,7 @@ async function subirEtiqueta(id,inp){const file=inp.files&&inp.files[0];inp.valu
 async function verEtiqueta(id){const p=PEDIDOS.find(x=>x.id===id);let link=p&&p._etiqueta_link;if(!link){const r=await api("etiqueta_link",{id});if(r.ok)link=r.etiqueta_link;}if(link)window.open(link,'_blank');else toast("Não consegui abrir a etiqueta");}
 async function salvarRastreio(id){const rastreio=document.getElementById("rk_"+id).value.trim();const transportadora=document.getElementById("tr_"+id).value;const r=await api("update",{id,rastreio,transportadora});if(r.ok){const p=PEDIDOS.find(x=>x.id===id);if(p){p.rastreio=rastreio;p.transportadora=transportadora;}toast("Rastreio salvo");render();}else toast("Erro");}
 async function avisar(id){const rastreio=document.getElementById("rk_"+id).value.trim();if(!rastreio){toast("Coloque o rastreio primeiro");return;}const transportadora=document.getElementById("tr_"+id).value;if(!confirm("Enviar o código de rastreio pro WhatsApp do cliente?"))return;const r=await api("notify",{id,rastreio,transportadora});if(r.ok){toast(r.sent?"Cliente avisado no WhatsApp ✓":"Salvo, mas o envio falhou");load();}else toast("Erro: "+(r.error||""));}
+async function etapa(id,et){const nomes={saiu_eua:'Saiu dos EUA 🇺🇸✈️',chegou_brasil:'Chegou no Brasil 🛬',saiu_entrega:'Saiu para entrega 🚚',entregue:'Entregue ✅'};if(!confirm('Avisar o cliente no WhatsApp: "'+nomes[et]+'"?'))return;const r=await api("etapa",{id,etapa:et});if(r.ok){toast(r.sent?'Cliente avisado: '+nomes[et]:'Não consegui enviar');const p=PEDIDOS.find(x=>x.id===id);if(p){p.etapa=et;if(et==='entregue')p.status='entregue';}render();}else toast("Erro: "+(r.error||""));}
 
 function simplificaAlf(nome){return (nome||'').toLowerCase().replace(/\b\d+[a-z]{0,3}\b/g,' ').replace(/\b(ml|oz|g|kg|cm|un|pcs|pack|kit)\b/g,' ').replace(/[^0-9a-zà-ÿ ]/g,' ').replace(/\s+/g,' ').trim().split(' ').slice(0,4).join(' ')||'mercadoria';}
 function imprimir(id){
