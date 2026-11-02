@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>IA USA · Pedidos (equipe)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}</script>
 <style>
 :root{--navy:#0d2440;--navy2:#13325c;--accent:#f47920;--accent-d:#d9650f;--line:#e4e9f0;--muted:#6b7c92;--ok:#16a34a;--bg:#f4f6fa}
 *{box-sizing:border-box}
@@ -87,12 +89,15 @@ function card(p){
     ${stepHtml(p)}
     <div class="actions">
       <button class="btn g" onclick="imprimir(${p.id})">🖨️ Imprimir declaração</button>
-      <button class="btn ${p.etiqueta_ok?'ok':'ghost'}" onclick="etiqueta(${p.id},${p.etiqueta_ok?'false':'true'})">${p.etiqueta_ok?'✓ Etiqueta emitida':'Marcar etiqueta emitida'}</button>
+      <input type="file" id="ef_${p.id}" accept="image/*,application/pdf" style="display:none" onchange="subirEtiqueta(${p.id},this)">
+      <button class="btn ${p.etiqueta_url?'ok':'ghost'}" onclick="document.getElementById('ef_${p.id}').click()">${p.etiqueta_url?'✓ Etiqueta salva — trocar':'📎 Subir etiqueta (lê o tracking)'}</button>
+      ${p.etiqueta_url?`<button class="btn ghost" onclick="verEtiqueta(${p.id})">👁️ Ver</button>`:''}
     </div>
     <div class="actions" style="border:0;padding-top:8px">
-      <div class="rk"><input id="rk_${p.id}" placeholder="Nº de rastreio" value="${esc(p.rastreio||'')}">
+      <div class="rk"><input id="rk_${p.id}" placeholder="Nº de rastreio" value="${esc(p.rastreio||p.rastreio_sugerido||'')}">
         <select id="tr_${p.id}" style="width:130px"><option value="">Transp.</option>${['Correios','DHL','FedEx','UPS','USPS'].map(t=>`<option ${p.transportadora===t?'selected':''}>${t}</option>`).join('')}</select>
         <button class="btn ghost" onclick="salvarRastreio(${p.id})">Salvar</button></div>
+      ${(!p.rastreio&&p.rastreio_sugerido)?`<div style="font-size:11.5px;color:#1fa14f;margin:-2px 0 4px">🔎 Tracking lido da etiqueta — confira e clique em Salvar.</div>`:''}
       <button class="btn" onclick="avisar(${p.id})">📲 Avisar cliente</button>
     </div>
   </div>`;
@@ -105,7 +110,10 @@ function render(){
 }
 function sair(){localStorage.removeItem("iausa_admin_pass");PASS="";loginView();}
 
-async function etiqueta(id,val){const r=await api("update",{id,etiqueta_ok:val});if(r.ok){const p=PEDIDOS.find(x=>x.id===id);if(p)p.etiqueta_ok=val;render();toast(val?"Etiqueta marcada":"Etiqueta desmarcada");}else toast("Erro");}
+function imgRedimensionada(file){return new Promise((res,rej)=>{const img=new Image();const url=URL.createObjectURL(file);img.onload=()=>{const max=1600;let w=img.naturalWidth,h=img.naturalHeight;const sc=Math.min(1,max/Math.max(w,h));const cw=Math.max(1,Math.round(w*sc)),ch=Math.max(1,Math.round(h*sc));const c=document.createElement('canvas');c.width=cw;c.height=ch;c.getContext('2d').drawImage(img,0,0,cw,ch);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.85));};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('imagem inválida'));};img.src=url;});}
+async function pdfPrimeiraPagina(file){if(!window.pdfjsLib)throw new Error('leitor de PDF não carregou');const buf=await file.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf}).promise;const page=await pdf.getPage(1);const vp=page.getViewport({scale:2});const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;return c.toDataURL('image/jpeg',0.85);}
+async function subirEtiqueta(id,inp){const file=inp.files&&inp.files[0];inp.value='';if(!file)return;toast("Lendo a etiqueta…");try{let dataUrl;if(file.type==='application/pdf'||/\.pdf$/i.test(file.name)){dataUrl=await pdfPrimeiraPagina(file);}else{dataUrl=await imgRedimensionada(file);}if(!dataUrl){toast("Não consegui ler o arquivo");return;}const r=await api("ler_etiqueta",{id,file_b64:dataUrl,file_name:file.name});if(!r.ok){toast("Erro: "+(r.error||""));return;}const p=PEDIDOS.find(x=>x.id===id);if(p){p.etiqueta_url='1';p.etiqueta_ok=true;p._etiqueta_link=r.etiqueta_link||null;if(r.tracking)p.rastreio_sugerido=r.tracking;}render();if(r.tracking){const el=document.getElementById('rk_'+id);if(el){el.value=r.tracking;el.style.borderColor='#1fa14f';}toast("Etiqueta salva · tracking lido: "+r.tracking+" — confira e Salvar");}else{toast("Etiqueta salva, mas não achei o tracking — digite manualmente");}}catch(e){toast("Falha: "+(e.message||e));}}
+async function verEtiqueta(id){const p=PEDIDOS.find(x=>x.id===id);let link=p&&p._etiqueta_link;if(!link){const r=await api("etiqueta_link",{id});if(r.ok)link=r.etiqueta_link;}if(link)window.open(link,'_blank');else toast("Não consegui abrir a etiqueta");}
 async function salvarRastreio(id){const rastreio=document.getElementById("rk_"+id).value.trim();const transportadora=document.getElementById("tr_"+id).value;const r=await api("update",{id,rastreio,transportadora});if(r.ok){const p=PEDIDOS.find(x=>x.id===id);if(p){p.rastreio=rastreio;p.transportadora=transportadora;}toast("Rastreio salvo");render();}else toast("Erro");}
 async function avisar(id){const rastreio=document.getElementById("rk_"+id).value.trim();if(!rastreio){toast("Coloque o rastreio primeiro");return;}const transportadora=document.getElementById("tr_"+id).value;if(!confirm("Enviar o código de rastreio pro WhatsApp do cliente?"))return;const r=await api("notify",{id,rastreio,transportadora});if(r.ok){toast(r.sent?"Cliente avisado no WhatsApp ✓":"Salvo, mas o envio falhou");load();}else toast("Erro: "+(r.error||""));}
 
