@@ -657,7 +657,7 @@ function goWhats(e,origem){
   db.from('pedidos').insert({produto_id:cur.id,produto_nome:cur.nome,asin:cur.asin||null,tamanho:curSize,qtd:curQty,valor:total,frete:0,total,custo_brl:cb,lucro,cliente_nome:name||null,cliente_cidade:city||null}).then(()=>{});
   logEvento('whatsapp',cur&&cur.id);window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');return false;
 }
-function logEvento(tipo,pid){try{db.from('eventos').insert({tipo,produto_id:pid||null}).then(()=>{});}catch(e){}}
+function logEvento(tipo,pid){try{fetch(SUPABASE_URL+'/rest/v1/eventos',{method:'POST',keepalive:true,headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({tipo:tipo,produto_id:pid||null})}).catch(()=>{});}catch(e){}}
 
 /* ===== CARRINHO / CAIXA (frete por caixa, gatilho de AOV) ===== */
 let CART=[];
