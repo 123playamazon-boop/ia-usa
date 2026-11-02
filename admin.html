@@ -113,6 +113,8 @@ tbody tr:hover{background:var(--panel-2)}
 .foot b{color:var(--ink)}
 .clearbtn{border:1px solid var(--line);background:transparent;color:var(--danger);font-weight:600;font-size:12px;padding:7px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
 .modal-ov{position:fixed;inset:0;z-index:80;background:rgba(6,10,18,.66);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}
+.modal-ov[hidden]{display:none!important}
+.mbtn-fechar{width:100%;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;margin-top:4px}
 .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:100%;max-width:460px;max-height:92vh;overflow-y:auto}
 .modal-h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
 .modal-h h3{font-size:16px;font-weight:700}
@@ -223,6 +225,7 @@ tbody tr:hover{background:var(--panel-2)}
       </div>
       <button class="mbtn-dec" onclick="gerarDeclaracao()">📄 Gerar declaração de importação</button>
       <p class="mhint">Ao marcar <b>Enviado</b> com rastreio, use "Avisar cliente" para mandar o código no WhatsApp dele — chega no celular e passa credibilidade.</p>
+      <button class="mbtn-fechar" onclick="fecharPedido()">Fechar</button>
     </div>
   </div>
 </div>
@@ -586,6 +589,7 @@ async function limparTeste(){
 
 document.getElementById('period').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PERIODO=+b.dataset.d;document.querySelectorAll('#period button').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
 document.getElementById('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;TAB=b.dataset.t;document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderTab();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const ov=document.getElementById('modalOv');if(ov&&!ov.hidden)fecharPedido();}});
 
 loadAll();
 </script>
