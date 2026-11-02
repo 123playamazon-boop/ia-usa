@@ -482,16 +482,16 @@ async function loadAll(){
   try{
     const {data:cfg}=await db.from('config').select('*').eq('id',1).maybeSingle();
     if(cfg) CONFIG={...CONFIG,...cfg};
-    const {data,error}=await db.from('produtos').select('*, variacoes(tamanho,ordem), fotos(url,ordem)').eq('ativo',true).order('ordem');
+    const {data,error}=await db.from('produtos_grid').select('*').eq('ativo',true).order('ordem');
     if(error) throw error;
-    PRODUTOS=(data||[]).map(p=>({...p,sizes:(p.variacoes||[]).sort((a,b)=>a.ordem-b.ordem).map(v=>v.tamanho),photos:(p.fotos||[]).sort((a,b)=>a.ordem-b.ordem).map(f=>f.url)}));
+    PRODUTOS=(data||[]).map(p=>({...p,sizes:[],photos:[],_full:false}));
     loadCart(); applyConfig(); renderCats(); renderShelves(); renderPanel(); updateFooterCo(); updateCartBtn(); route(); logEvento('visita');
   }catch(e){ document.getElementById('shelves').innerHTML=`<div class="empty">Erro ao conectar: ${esc(e.message||e)}</div>`; }
 }
 function cats(){ const s=new Set(PRODUTOS.map(p=>p.categoria).filter(Boolean)); return CAT_ORDER.filter(c=>s.has(c)).concat([...s].filter(c=>!CAT_ORDER.includes(c))); }
 function applyConfig(){const g=id=>document.getElementById(id);g('cfgNome').value=CONFIG.nome_loja||'';g('cfgWa').value=CONFIG.whatsapp||'';if(g('cfgEmail'))g('cfgEmail').value=CONFIG.email||'';g('cfgDolar').value=CONFIG.dolar??'';g('cfgFrete').value=CONFIG.frete_kg??'';g('cfgIcms').value=CONFIG.icms_percent??'';g('cfgMargem').value=CONFIG.margem_percent??'';}
 function updateFooterCo(){document.getElementById('footCo').textContent=`${CONFIG.nome_loja||'IA USA'} — Importação dos EUA. Empresa sediada em Miami, Flórida.`;}
-function img(p){return (p.photos&&p.photos[0])||ph(p.nome);}
+function img(p){return (p.photos&&p.photos[0])||p.capa||ph(p.nome);}
 function descPct(p){return (p.preco_de&&p.preco_de>p.preco)?Math.round((1-p.preco/p.preco_de)*100):0;}
 function waNum(){return (CONFIG.whatsapp||'').replace(/\D/g,'');}
 function waGeral(){logEvento('whatsapp');const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}window.open(`https://wa.me/${n}?text=${encodeURIComponent('Olá! Vim pela loja IA USA e quero tirar uma dúvida. 🙂')}`,'_blank');}
@@ -561,10 +561,24 @@ function searchAI(){logEvento('whatsapp');const n=waNum();if(!n){toast('WhatsApp
 /* ===== PRODUCT PAGE ===== */
 let cur=null,curSize=null,curQty=1,curFotos=[];
 function brandOf(p){const b=(p.nome||'').trim().split(/\s+/)[0];return b&&b.length>1?b:(p.categoria||'Importado');}
-function openProduto(id,fromHash){
+async function carregarProdutoCompleto(p){
+  try{
+    const {data}=await db.from('produtos').select('descricao,reviews,fotos(url,ordem),variacoes(tamanho,ordem)').eq('id',p.id).maybeSingle();
+    if(data){p.descricao=data.descricao;p.reviews=data.reviews;p.photos=(data.fotos||[]).sort((a,b)=>a.ordem-b.ordem).map(f=>f.url);p.sizes=(data.variacoes||[]).sort((a,b)=>a.ordem-b.ordem).map(v=>v.tamanho);}
+  }catch(e){}
+  p._full=true;
+}
+async function openProduto(id,fromHash){
   const p=PRODUTOS.find(x=>x.id===id);if(!p)return;
   if(!fromHash){try{history.replaceState(null,'','#p='+id);}catch(e){}}
-  cur=p;curSize=prodSizes(p).length?null:'único';curQty=1;logEvento('view',p.id);
+  cur=p;curQty=1;logEvento('view',p.id);
+  if(!p._full){
+    document.getElementById('produto').innerHTML='<div class="pp"><div style="padding:64px 20px;text-align:center;color:#8a98ab;font-size:15px">Carregando produto…</div></div>';
+    setView('produto');window.scrollTo(0,0);
+    await carregarProdutoCompleto(p);
+    if(cur!==p)return;
+  }
+  curSize=prodSizes(p).length?null:'único';
   const isVid=p.video_url&&/\.(mp4|webm|mov)$/i.test(p.video_url);
   curFotos=(p.photos&&p.photos.length)?p.photos:[img(p)];
   const d=descPct(p);const vlabel=sizeLabel(p);const _psz=prodSizes(p);
