@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>IA USA · Conversas (equipe)</title>
+<style>
+:root{--navy:#0d2440;--navy2:#13325c;--accent:#f47920;--line:#e4e9f0;--muted:#6b7c92;--ok:#16a34a;--bg:#eef1f6;--cli:#fff;--us:#d9fdd3}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#13233a;height:100vh;overflow:hidden}
+header{background:var(--navy);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px}
+header .t{font-weight:800;font-size:17px}header .t b{color:var(--accent)}
+header .sp{flex:1}
+.btn{border:0;border-radius:9px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.g{background:#1f3d6b;color:#fff}.btn.ghost{background:rgba(255,255,255,.14);color:#fff}
+.wrap{display:flex;height:calc(100vh - 50px)}
+.side{width:340px;max-width:40%;border-right:1px solid var(--line);background:#fff;overflow-y:auto;flex:0 0 auto}
+.ci{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.ci:hover{background:#f6f8fb}.ci.on{background:#eaf1fb}
+.ci .nm{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
+.ci .ph{font-size:11.5px;color:var(--muted)}
+.ci .ls{font-size:12.5px;color:#55657a;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.02em}
+.chip.bot{background:#e6eefc;color:#2a5bd7}.chip.hum{background:#fde8cf;color:#b4610f}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.mhead{background:#f6f8fb;border-bottom:1px solid var(--line);padding:11px 15px;display:flex;align-items:center;gap:10px}
+.mhead .who{font-weight:700}.mhead .st{font-size:11.5px;color:var(--muted)}
+.thread{flex:1;overflow-y:auto;padding:16px;background:#e9edf3;background-image:radial-gradient(#dfe5ee 1px,transparent 0);background-size:22px 22px}
+.b{max-width:76%;padding:8px 11px;border-radius:12px;margin:7px 0;font-size:13.5px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.b.cli{background:var(--cli);border-top-left-radius:3px;margin-right:auto}
+.b.us{background:var(--us);border-top-right-radius:3px;margin-left:auto}
+.b.hum{background:#cfe9ff}
+.b .tm{font-size:10px;color:#90a0b3;margin-top:3px;text-align:right}
+.b .lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#8a6d3b;margin-bottom:2px}
+.composer{border-top:1px solid var(--line);background:#f6f8fb;padding:10px 12px;display:flex;gap:9px;align-items:flex-end}
+.composer textarea{flex:1;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:14px;font-family:inherit;resize:none;max-height:120px;min-height:42px}
+.send{background:var(--accent);color:#fff;border:0;border-radius:50%;width:44px;height:44px;font-size:19px;cursor:pointer;flex:0 0 auto}
+.tomar{background:var(--ok);color:#fff;border:0;border-radius:9px;padding:8px 12px;font-weight:700;font-size:12.5px;cursor:pointer}
+.tomar.dev{background:#64748b}
+.empty{color:var(--muted);text-align:center;padding:40px 20px;font-size:14px}
+.note{font-size:11px;color:var(--muted);padding:8px 14px;text-align:center}
+.login{max-width:340px;margin:16vh auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 22px;text-align:center}
+.login h1{font-size:19px;margin:0 0 4px}.login p{color:var(--muted);font-size:13px;margin:0 0 18px}
+.login input{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px;margin-bottom:12px}
+.login button{width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px;font-weight:700;font-size:15px;cursor:pointer}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#13233a;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
+.toast.show{opacity:1}
+@media(max-width:680px){.side{width:100%;max-width:100%;display:var(--sideDisp,block)}.main{display:var(--mainDisp,none)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+const API="https://qfxemysisbyqevxfihvd.supabase.co/functions/v1/iausa-admin";
+let PASS=localStorage.getItem("iausa_admin_pass")||"";
+let CONVS=[], CUR=null, CURDATA=null, timerList=null, timerThread=null;
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function hora(ts){try{return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+async function api(action,extra){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,pass:PASS,...extra})});return await r.json();}
+
+function loginView(){document.getElementById("app").innerHTML=`<div class="login"><h1>IA <b style="color:#f47920">USA</b> · Conversas</h1><p>Acesso da equipe</p><input id="pw" type="password" placeholder="Senha" onkeydown="if(event.key==='Enter')doLogin()"><button onclick="doLogin()">Entrar</button></div>`;setTimeout(()=>document.getElementById('pw')?.focus(),100);}
+async function doLogin(){PASS=document.getElementById("pw").value.trim();const r=await api("conversas");if(r&&r.ok){localStorage.setItem("iausa_admin_pass",PASS);CONVS=r.conversas||[];shell();}else toast("Senha inválida");}
+function sair(){localStorage.removeItem("iausa_admin_pass");PASS="";CUR=null;clearInterval(timerList);clearInterval(timerThread);loginView();}
+
+function shell(){
+  document.getElementById("app").innerHTML=`<header><span class="t">IA <b>USA</b> · Conversas</span><span class="sp"></span>
+    <a class="btn g" href="admin.html">📊 Dashboard</a><a class="btn g" href="pedidos.html">📦 Pedidos</a><button class="btn ghost" onclick="sair()">Sair</button></header>
+    <div class="wrap"><div class="side" id="side"></div><div class="main" id="main"><div class="empty">Selecione uma conversa à esquerda.</div></div></div>`;
+  renderSide();
+  clearInterval(timerList);timerList=setInterval(refreshList,12000);
+}
+async function refreshList(){const r=await api("conversas");if(r&&r.ok){CONVS=r.conversas||[];renderSide();}}
+function renderSide(){
+  const el=document.getElementById('side');if(!el)return;
+  if(!CONVS.length){el.innerHTML='<div class="empty">Nenhuma conversa ainda.<br>Quando um cliente chamar no WhatsApp, aparece aqui.</div>';return;}
+  el.innerHTML=CONVS.map(c=>`<div class="ci${CUR===c.phone?' on':''}" onclick="abrir('${c.phone}')">
+    <div class="nm">${esc(c.nome||c.phone)} <span class="chip ${c.humano?'hum':'bot'}">${c.humano?'Humano':'Robô'}</span></div>
+    <div class="ph">${esc(c.phone)} · ${esc(c.state||'')}</div>
+    <div class="ls">${esc(c.last||'')}</div></div>`).join('');
+}
+async function abrir(phone){
+  CUR=phone;renderSide();
+  document.documentElement.style.setProperty('--sideDisp','none');document.documentElement.style.setProperty('--mainDisp','flex');
+  const m=document.getElementById('main');m.innerHTML='<div class="empty">Carregando…</div>';
+  await loadThread();
+  clearInterval(timerThread);timerThread=setInterval(loadThread,6000);
+}
+async function loadThread(){
+  if(!CUR)return;const r=await api("conversa",{phone:CUR});if(!r||!r.ok)return;CURDATA=r;
+  const m=document.getElementById('main');if(!m)return;
+  const bolhas=(r.msgs||[]).map(x=>{
+    let h='';
+    if(x.inbound){h+=`<div class="b cli">${esc(x.inbound)}<div class="tm">${hora(x.created_at)}</div></div>`;}
+    if(x.reply){const hum=x.intent==='humano';h+=`<div class="b ${hum?'hum':'us'}">${hum?'<div class="lbl">Equipe</div>':''}${esc(x.reply)}<div class="tm">${hora(x.created_at)}</div></div>`;}
+    return h;
+  }).join('')||'<div class="empty">Sem mensagens.</div>';
+  m.innerHTML=`<div class="mhead"><button class="btn g" style="background:#1f3d6b;padding:6px 10px" onclick="voltar()">←</button>
+      <div style="flex:1"><div class="who">${esc(r.nome||CUR)}</div><div class="st">${esc(CUR)} · ${esc(r.state||'')} · ${r.humano?'🧑 humano no comando':'🤖 robô ativo'}</div></div>
+      <button class="tomar ${r.humano?'dev':''}" onclick="toggleHumano(${r.humano?'false':'true'})">${r.humano?'Devolver pro robô':'Assumir atendimento'}</button></div>
+    <div class="thread" id="thread">${bolhas}</div>
+    <div class="composer"><textarea id="msg" placeholder="Escreva uma mensagem…" oninput="autoGrow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviar();}"></textarea><button class="send" onclick="enviar()">➤</button></div>`;
+  const th=document.getElementById('thread');if(th)th.scrollTop=th.scrollHeight;
+}
+function autoGrow(t){t.style.height='42px';t.style.height=Math.min(120,t.scrollHeight)+'px';}
+function voltar(){CUR=null;clearInterval(timerThread);document.documentElement.style.setProperty('--sideDisp','block');document.documentElement.style.setProperty('--mainDisp','none');const m=document.getElementById('main');if(m)m.innerHTML='<div class="empty">Selecione uma conversa.</div>';renderSide();}
+async function enviar(){
+  const el=document.getElementById('msg');const texto=(el.value||'').trim();if(!texto||!CUR)return;
+  el.value='';autoGrow(el);
+  const r=await api("enviar_manual",{phone:CUR,texto});
+  if(r&&r.ok){if(!r.sent)toast("Salvo, mas o envio falhou");await loadThread();refreshList();}else toast("Erro ao enviar");
+}
+async function toggleHumano(v){
+  const r=await api(v?"assumir":"devolver",{phone:CUR});
+  if(r&&r.ok){toast(v?"Você assumiu — o robô ficou quieto":"Devolvido pro robô");await loadThread();refreshList();}else toast("Erro");
+}
+if(PASS){api("conversas").then(r=>{if(r&&r.ok){CONVS=r.conversas||[];shell();}else loginView();});}else loginView();
+</script>
+</body>
+</html>
