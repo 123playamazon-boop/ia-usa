@@ -135,6 +135,8 @@ img{max-width:100%}
 .zoomov img{max-width:96vw;max-height:92vh;object-fit:contain;transition:transform .2s ease;cursor:zoom-in;will-change:transform}
 .zoomov .zx{position:fixed;top:14px;right:16px;background:rgba(255,255,255,.16);color:#fff;border:0;width:42px;height:42px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;z-index:201}
 .zoomov .zc{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:#dfe8f2;font-size:12px;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:999px;z-index:201}
+.zoomov .znav{position:fixed;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.16);color:#fff;border:0;width:48px;height:48px;border-radius:50%;font-size:30px;line-height:1;cursor:pointer;z-index:201;display:none;align-items:center;justify-content:center;padding-bottom:4px}
+.zoomov .zprev{left:12px}.zoomov .znext{right:12px}
 .stars{display:inline-flex;gap:1px;line-height:1}.stars .st{color:#dfe3e9;font-size:13px}.stars .st.on{color:#F5A623}
 .rt{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin:5px 0}.rt .rv-num{font-weight:700;color:var(--navy-ink)}.rt .rc{color:var(--faint)}
 .rt.big{font-size:14px;margin:8px 0}.rt.big .st{font-size:17px}
@@ -442,7 +444,7 @@ footer{margin-top:40px;background:var(--navy);color:#b8c8d9;font-size:13px}
   <div class="cart-foot" id="cartFoot"></div>
 </aside>
 <div class="toast" id="toast"></div>
-<div class="zoomov" id="zoomov" onclick="closeZoom()"><button class="zx" onclick="closeZoom()" aria-label="Fechar">✕</button><img id="zoomImg" onclick="zoomTap(event)" alt=""><span class="zc">Toque na imagem para dar zoom · toque fora para fechar</span></div>
+<div class="zoomov" id="zoomov" onclick="closeZoom()"><button class="zx" onclick="event.stopPropagation();closeZoom()" aria-label="Fechar">✕</button><button class="znav zprev" onclick="event.stopPropagation();zoomNav(-1)" aria-label="Anterior">‹</button><img id="zoomImg" onclick="zoomTap(event)" alt=""><button class="znav znext" onclick="event.stopPropagation();zoomNav(1)" aria-label="Próxima">›</button><span class="zc" id="zCount">Toque na imagem para dar zoom · toque fora para fechar</span></div>
 
 <script>
 const SUPABASE_URL="https://qfxemysisbyqevxfihvd.supabase.co";
@@ -452,10 +454,15 @@ const BRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const num=s=>{const n=parseFloat(String(s==null?'':s).replace(',','.'));return isNaN(n)?0:n;};
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
-let _zed=false;
-function openZoom(src){if(!src)return;const o=document.getElementById('zoomov'),im=document.getElementById('zoomImg');im.style.transform='';_zed=false;im.src=src;o.classList.add('on');document.body.style.overflow='hidden';}
+let _zed=false,_zidx=0;
+function _zoomSync(i){const im=document.getElementById('ppImg');if(im&&curFotos[i])im.src=curFotos[i];const th=document.querySelectorAll('#ppThumbs .gt');th.forEach((x,j)=>x.classList.toggle('on',j===i));}
+function _zCount(){const c=document.getElementById('zCount');const multi=curFotos&&curFotos.length>1;if(c)c.textContent=multi?`${_zidx+1} / ${curFotos.length} · arraste ou use ‹ ›`:'Toque para dar zoom · toque fora para fechar';document.querySelectorAll('.znav').forEach(b=>b.style.display=multi?'flex':'none');}
+function openZoom(src){if(!src)return;const o=document.getElementById('zoomov'),im=document.getElementById('zoomImg');if(!curFotos||!curFotos.length)curFotos=[src];let i=curFotos.indexOf(src);_zidx=i<0?0:i;im.style.transform='';im.style.cursor='zoom-in';_zed=false;im.src=curFotos[_zidx];o.classList.add('on');document.body.style.overflow='hidden';_zCount();}
 function closeZoom(){document.getElementById('zoomov').classList.remove('on');document.body.style.overflow='';}
+function zoomNav(dir){if(!curFotos||curFotos.length<2)return;_zidx=(_zidx+dir+curFotos.length)%curFotos.length;const im=document.getElementById('zoomImg');_zed=false;im.style.transform='';im.style.cursor='zoom-in';im.src=curFotos[_zidx];_zCount();_zoomSync(_zidx);}
 function zoomTap(e){e.stopPropagation();const im=document.getElementById('zoomImg');if(!_zed){const r=im.getBoundingClientRect();const x=Math.max(0,Math.min(100,((e.clientX-r.left)/r.width)*100)),y=Math.max(0,Math.min(100,((e.clientY-r.top)/r.height)*100));im.style.transformOrigin=x+'% '+y+'%';im.style.transform='scale(2.6)';im.style.cursor='zoom-out';_zed=true;}else{im.style.transform='';im.style.cursor='zoom-in';_zed=false;}}
+document.addEventListener('keydown',e=>{if(!document.getElementById('zoomov')?.classList.contains('on'))return;if(e.key==='ArrowRight')zoomNav(1);else if(e.key==='ArrowLeft')zoomNav(-1);else if(e.key==='Escape')closeZoom();});
+(function(){let sx=0,sy=0,st=0;const ov=()=>document.getElementById('zoomov');document.addEventListener('touchstart',e=>{if(!ov()?.classList.contains('on')||_zed)return;const t=e.touches[0];sx=t.clientX;sy=t.clientY;st=Date.now();},{passive:true});document.addEventListener('touchend',e=>{if(!ov()?.classList.contains('on')||_zed)return;const t=e.changedTouches[0];const dx=t.clientX-sx,dy=t.clientY-sy;if(Date.now()-st<600&&Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.4){zoomNav(dx<0?1:-1);}},{passive:true});})();
 function ph(nm){return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='#f4f6f9'/><text x='150' y='150' font-family='sans-serif' font-size='110' fill='#c6ccd4' text-anchor='middle' dominant-baseline='central'>${(nm||'?').trim()[0]||'?'}</text></svg>`);}
 window.imgErr=function(el,nm){el.onerror=null;el.src=ph(nm);};
 const CAT_ORDER=['Suplementos','Eletrônicos','Beleza','Bonés','Mochilas','Disney','Bebê','Lingerie','Meias','Perfumes','Colecionáveis','Gaming','Brinquedos','Beleza Premium','Cozinha','Papelaria','Esportes','Pet','Alimentos','Casa','Saúde'];
