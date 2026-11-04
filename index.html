@@ -517,6 +517,7 @@ function openMenu(){const cs=cats();document.getElementById('drawerCats').innerH
 function closeMenu(){document.getElementById('drawerBg').classList.remove('on');document.getElementById('drawer').classList.remove('on');document.body.style.overflow='';}
 
 /* ===== CATEGORIES / SHELVES ===== */
+let _renderToken=0;
 function renderCats(){
   const cs=cats();
   document.getElementById('sideCats').innerHTML=`<a class="item" aria-current="${filtroCat==='Todos'}" onclick="pickCat('Todos')">Todos os produtos</a>`+cs.map(c=>`<a class="item" aria-current="${c===filtroCat}" onclick="pickCat('${c.replace(/'/g,"\\'")}')">${c}<span class="q">${PRODUTOS.filter(p=>p.categoria===c).length}</span></a>`).join('');
@@ -553,7 +554,16 @@ function renderShelves(){
     const chips=subs.length>1?`<div class="subchips"><button aria-pressed="${filtroSub==='Todos'}" onclick="pickSub('Todos')">Todos <span>${all.length}</span></button>`+subs.map(s=>`<button aria-pressed="${s===filtroSub}" onclick="pickSub('${s.replace(/'/g,"\\'")}')">${esc(s)} <span>${subMap[s]}</span></button>`).join('')+`</div>`:'';
     el.innerHTML=`<section class="shelf"><div class="shelf-h"><h2>${esc(filtroCat)}</h2><a onclick="pickCat('Todos')">‹ Início</a></div>${chips}<div class="grid">${prods.map(cardHtml).join('')||'<div class="empty">Nenhum produto.</div>'}</div></section>`;return;}
   const _s=cats().map(c=>{let prods=PRODUTOS.filter(p=>p.categoria===c);if(!prods.length)return '';const _o=SUBORDER[c];if(_o){const _r=s=>{const i=_o.indexOf(s);return i<0?99:i;};prods=prods.slice().sort((a,b)=>_r(a.subcategoria||'Outros')-_r(b.subcategoria||'Outros'));}
-    return `<section class="shelf"><div class="shelf-h"><h2>${esc(c)}</h2>${prods.length>2?`<a onclick="pickCat('${c.replace(/'/g,"\\'")}')">Ver todos ›</a>`:''}</div><div class="rail">${prods.map(cardHtml).join('')}</div></section>`;}).filter(Boolean);const _mb='<div class=\"midbanner\" onclick=\"waGeral()\"><img src=\"assets/banner-hero.jpg\" alt=\"Produtos originais dos EUA — fale com nosso time\" loading=\"lazy\"></div>';if(_s.length>=3)_s.splice(Math.floor(_s.length/2),0,_mb);el.innerHTML=_s.join('')||'<div class="empty">Nenhum produto ativo.</div>';
+    const _shown=prods.slice(0,12);
+    return `<section class="shelf"><div class="shelf-h"><h2>${esc(c)}</h2>${prods.length>2?`<a onclick="pickCat('${c.replace(/'/g,"\\'")}')">Ver todos ›</a>`:''}</div><div class="rail">${_shown.map(cardHtml).join('')}</div></section>`;}).filter(Boolean);
+  const _mb='<div class=\"midbanner\" onclick=\"waGeral()\"><img src=\"assets/banner-hero.jpg\" alt=\"Produtos originais dos EUA — fale com nosso time\" loading=\"lazy\"></div>';if(_s.length>=3)_s.splice(Math.floor(_s.length/2),0,_mb);
+  if(!_s.length){el.innerHTML='<div class="empty">Nenhum produto ativo.</div>';return;}
+  /* Render progressivo: pinta as primeiras prateleiras na hora e monta o resto em blocos,
+     pra não travar o navegador interno do Facebook/Instagram (CPU fraca) ao montar tudo de uma vez. */
+  el.innerHTML='';
+  const _rt=++_renderToken; let _i=0;
+  const _step=()=>{ if(_rt!==_renderToken)return; try{ let _n=0; while(_i<_s.length&&_n<3){ el.insertAdjacentHTML('beforeend',_s[_i]); _i++; _n++; } }catch(_e){} if(_i<_s.length){ (window.requestAnimationFrame||(f=>setTimeout(f,16)))(_step); } };
+  _step();
 }
 function onBusca(){termoBusca=(document.getElementById('busca').value||'').toLowerCase().trim();setView('loja');renderShelves();}
 function searchAI(){logEvento('whatsapp');const n=waNum();if(!n){toast('WhatsApp não configurado.');return;}const t=(document.getElementById('busca').value||'').trim();const msg=t?`Olá! Quero importar dos EUA: *${t}*. Vocês conseguem achar e me passar o preço final em reais? 🙂`:'Olá! Quero importar um produto dos EUA pela IA USA. Pode me ajudar a achar? 🙂';window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank');}
