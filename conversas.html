@@ -22,7 +22,8 @@ header .sp{flex:1}
 .ci .ph{font-size:11.5px;color:var(--muted)}
 .ci .ls{font-size:12.5px;color:#55657a;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.02em}
-.chip.bot{background:#e6eefc;color:#2a5bd7}.chip.hum{background:#fde8cf;color:#b4610f}
+.chip.bot{background:#e6eefc;color:#2a5bd7}.chip.hum{background:#fde8cf;color:#b4610f}.chip.na{background:#fde2e2;color:#c0392b}
+.ci.na{border-left:3px solid #e74c3c}
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
 .mhead{background:#f6f8fb;border-bottom:1px solid var(--line);padding:11px 15px;display:flex;align-items:center;gap:10px}
 .mhead .who{font-weight:700}.mhead .st{font-size:11.5px;color:var(--muted)}
@@ -70,19 +71,21 @@ function sair(){localStorage.removeItem("iausa_admin_pass");PASS="";CUR=null;cle
 
 function shell(){
   document.getElementById("app").innerHTML=`<header><span class="t">IA <b>USA</b> · Conversas</span><span class="live"><span class="dot"></span>ao vivo</span><span class="sp"></span>
-    <a class="btn g" href="admin.html">📊 Dashboard</a><a class="btn g" href="trafego.html">📈 Tráfego</a><a class="btn g" href="pedidos.html">📦 Pedidos</a><button class="btn ghost" onclick="sair()">Sair</button></header>
+    <button class="btn g" style="background:#16a34a" onclick="sincronizar(this)">🔄 Sincronizar WhatsApp</button><a class="btn g" href="admin.html">📊 Dashboard</a><a class="btn g" href="trafego.html">📈 Tráfego</a><a class="btn g" href="pedidos.html">📦 Pedidos</a><button class="btn ghost" onclick="sair()">Sair</button></header>
     <div class="wrap"><div class="side" id="side"></div><div class="main" id="main"><div class="empty">Selecione uma conversa à esquerda.</div></div></div>`;
   renderSide();
   clearInterval(timerList);timerList=setInterval(refreshList,7000);
 }
 async function refreshList(){const r=await api("conversas");if(r&&r.ok){CONVS=r.conversas||[];renderSide();}}
+async function sincronizar(btn){if(btn){btn.disabled=true;btn.textContent='⏳ Sincronizando…';}toast('Puxando conversas do WhatsApp…');const r=await api("sincronizar");if(btn){btn.disabled=false;btn.textContent='🔄 Sincronizar WhatsApp';}if(r&&r.ok){toast(r.importadas>0?(r.importadas+' conversa(s) nova(s) importada(s) ✅'):'Tudo em dia — nenhuma conversa nova');await refreshList();}else toast('Erro ao sincronizar'+(r&&r.error?': '+r.error:''));}
 function renderSide(){
   const el=document.getElementById('side');if(!el)return;
   if(!CONVS.length){el.innerHTML='<div class="empty">Nenhuma conversa ainda.<br>Quando um cliente chamar no WhatsApp, aparece aqui.</div>';return;}
-  el.innerHTML=CONVS.map(c=>`<div class="ci${CUR===c.phone?' on':''}" onclick="abrir('${c.phone}')">
-    <div class="nm">${esc(c.nome||c.phone)} <span class="chip ${c.humano?'hum':'bot'}">${c.humano?'Humano':'Robô'}</span></div>
+  el.innerHTML=CONVS.map(c=>{const na=c.state==='nao_atendida';const chip=na?'<span class="chip na">⚠️ Não atendida</span>':`<span class="chip ${c.humano?'hum':'bot'}">${c.humano?'Humano':'Robô'}</span>`;
+    return `<div class="ci${CUR===c.phone?' on':''}${na?' na':''}" onclick="abrir('${c.phone}')">
+    <div class="nm">${esc(c.nome||c.phone)} ${chip}</div>
     <div class="ph">${esc(c.phone)} · ${esc(c.state||'')}</div>
-    <div class="ls">${esc(c.last||'')}</div></div>`).join('');
+    <div class="ls">${esc(c.last||'')}</div></div>`;}).join('');
 }
 async function abrir(phone){
   CUR=phone;renderSide();
