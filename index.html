@@ -809,7 +809,7 @@ function trackGo(){const v=(document.getElementById('trk')?.value||'').trim();lo
 
 /* ===== PANEL ===== */
 function renderPanel(){const el=document.getElementById('plist');if(!PRODUTOS.length){el.innerHTML='<div class="empty">Nenhum produto.</div>';return;}
-  el.innerHTML=PRODUTOS.map(p=>`<div class="prow"><img src="${img(p)}" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')"><div class="i"><div class="n">${esc(p.nome)}</div><div class="m">${esc(p.categoria||'—')} · ${BRL.format(p.preco)}${p.preco_usd?` · US$${p.preco_usd}`:''}</div></div></div>`).join('');}
+  el.innerHTML=PRODUTOS.map(p=>`<div class="prow"><img src="${img(p)}" loading="lazy" decoding="async" onerror="imgErr(this,'${(p.nome||'').replace(/'/g,'')}')"><div class="i"><div class="n">${esc(p.nome)}</div><div class="m">${esc(p.categoria||'—')} · ${BRL.format(p.preco)}${p.preco_usd?` · US$${p.preco_usd}`:''}</div></div></div>`).join('');}
 async function saveConfig(){try{const g=id=>document.getElementById(id);const c={id:1,nome_loja:g('cfgNome').value.trim(),whatsapp:g('cfgWa').value.replace(/\D/g,''),email:(g('cfgEmail')?.value||'').trim(),dolar:num(g('cfgDolar').value)||5.4,frete_kg:num(g('cfgFrete').value)||50,icms_percent:num(g('cfgIcms').value)||17,margem_percent:num(g('cfgMargem').value)||40};await db.from('config').upsert(c);CONFIG={...CONFIG,...c};applyConfig();updateFooterCo();const s=document.getElementById('cfgSaved');s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1500);}catch(e){toast('Erro: '+(e.message||e));}}
 loadAll();
 </script>
